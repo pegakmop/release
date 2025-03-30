@@ -4,7 +4,9 @@ const zlib = require('zlib');
 const { execSync } = require('child_process');
 const os = require('os');
 
-const repoBaseUrl = 'https://ground-zerro.github.io/release';
+const GITHUB_USER = process.env.GITHUB_REPOSITORY?.split('/')[0] || 'ground-zerro';
+const GITHUB_REPO = process.env.GITHUB_REPOSITORY?.split('/')[1] || 'release';
+const repoBaseUrl = `https://${GITHUB_USER.toLowerCase()}.github.io/${GITHUB_REPO}`;
 const rootDirs = ['keenetic'];
 const isGitHubCI = process.env.GITHUB_ACTIONS === 'true';
 const repoRoot = isGitHubCI ? path.resolve(process.cwd()) : __dirname;

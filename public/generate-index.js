@@ -95,7 +95,9 @@ function generateIndexForDir(currentPath, rootDirAbs, rootDirRel) {
   const relativePathFromRoot = path.relative(rootDirAbs, currentPath).replace(/\\/g, '/');
   const fullPathFromRepo = path.posix.join(rootDirRel, relativePathFromRoot);
   const folderUrl = `/${fullPathFromRepo}/`.replace(/\/+/g, '/');
-  const baseHref = `${repoBaseUrl}/${fullPathFromRepo}/`.replace(/\\/+/g, '/').replace(/([^:]\/)\/+/g, '$1');
+  const baseHref = `${repoBaseUrl}/${fullPathFromRepo}/`
+  .replace(/\\\\+/g, '/')    // ← двойной бэкслэш для JS-строки!
+  .replace(/([^:]\/)\/+/g, '$1');
 
   const files = entries.filter(e => e.isFile() && e.name !== 'index.html')
     .map(e => ({ name: e.name, size: formatSize(fs.statSync(path.join(currentPath, e.name)).size) }))

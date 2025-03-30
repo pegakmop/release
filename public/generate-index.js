@@ -35,7 +35,6 @@ function parseControlFields(content) {
 function extractControlFromIpk(ipkPath) {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ipk-'));
   try {
-    execSync(`tar -xOf "${ipkPath}" control.tar.gz | tar -xzOf - ./control`, { stdio: 'pipe' });
     const controlTar = execSync(`tar -xOf "${ipkPath}" control.tar.gz`);
     fs.writeFileSync(path.join(tmpDir, 'control.tar.gz'), controlTar);
     execSync(`tar -xzf control.tar.gz`, { cwd: tmpDir });
@@ -49,12 +48,13 @@ function extractControlFromIpk(ipkPath) {
   }
 }
 
-function generatePackagesFiles(dir, relPath, files) {
+function generatePackagesFiles(dir, relPath) {
+  const entries = fs.readdirSync(dir);
+  const ipkFiles = entries.filter(f => f.endsWith('.ipk'));
+  if (ipkFiles.length === 0) return;
+
   const packages = [];
-
-  for (const file of files) {
-    if (!file.endsWith('.ipk')) continue;
-
+  for (const file of ipkFiles) {
     const ipkPath = path.join(dir, file);
     const control = extractControlFromIpk(ipkPath);
     if (!control) continue;
@@ -77,8 +77,6 @@ function generatePackagesFiles(dir, relPath, files) {
     packages.push(entry);
   }
 
-  if (packages.length === 0) return;
-
   const allText = packages.join('\n');
   fs.writeFileSync(path.join(dir, 'Packages'), allText);
   fs.writeFileSync(path.join(dir, 'Packages.gz'), zlib.gzipSync(allText));
@@ -91,6 +89,8 @@ function generatePackagesFiles(dir, relPath, files) {
 }
 
 function generateIndexForDir(currentPath, rootDirAbs, rootDirRel) {
+  generatePackagesFiles(currentPath, path.posix.join(rootDirRel, path.relative(rootDirAbs, currentPath).replace(/\\/g, '/')));
+
   const entries = fs.readdirSync(currentPath, { withFileTypes: true });
   const relativePathFromRoot = path.relative(rootDirAbs, currentPath).replace(/\\/g, '/');
   const fullPathFromRepo = path.posix.join(rootDirRel, relativePathFromRoot);
@@ -135,7 +135,7 @@ h1 { margin-bottom: 1em; }
   html += '</table></body></html>';
 
   fs.writeFileSync(path.join(currentPath, 'index.html'), html, 'utf-8');
-  generatePackagesFiles(currentPath, fullPathFromRepo, files.map(f => f.name));
+  console.log(`✔ index.html created in ${folderUrl}`);
 }
 
 function walkAndGenerate(currentDir, rootDirAbs, rootDirRel) {

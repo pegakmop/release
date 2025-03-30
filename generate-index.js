@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-// Настройки
 const repoBaseUrl = 'https://ground-zerro.github.io/release';
 const rootDirs = [
   'keenetic'
@@ -28,7 +27,6 @@ function generateIndexForDir(currentPath, rootDirAbs, rootDirRel) {
   const folderUrl = `/${fullPathFromRepo}/`.replace(/\/+$/, '/');
   const baseHref = `${repoBaseUrl}/${fullPathFromRepo}/`.replace(/\/+$/, '/');
 
-  // Вычисляем "один уровень выше"
   const parentPath = fullPathFromRepo.split('/').slice(0, -1).join('/');
   const parentUrl = parentPath ? `${repoBaseUrl}/${parentPath}/` : `${repoBaseUrl}/`;
 

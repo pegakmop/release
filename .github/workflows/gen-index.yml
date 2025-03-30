@@ -1,0 +1,31 @@
+name: Generate HTML Index Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Run generate-index.js
+      run: node generate-index.js
+
+    - name: Deploy to GitHub Pages (pg_pages branch)
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: pg_pages
+        publish_dir: .
+        force_orphan: true
+        

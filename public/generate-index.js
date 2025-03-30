@@ -48,7 +48,7 @@ function generateIndexForDir(currentPath, rootDirAbs, rootDirRel) {
 
   const rows = [
     { name: '..', size: '', href: parentUrl },
-    ...dirs.map(d => ({ ...d, href: `${baseHref}${encodeURIComponent(d.name)}` })),
+    ...dirs.map(d => ({ ...d, href: `${baseHref}${encodeURI(d.name)}` })),
     ...files.map(f => ({ ...f, href: `${baseHref}${encodeURIComponent(f.name)}` }))
   ];
 

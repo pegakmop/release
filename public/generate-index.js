@@ -51,10 +51,24 @@ function extractControlFromIpk(ipkPath) {
 function generatePackagesFiles(dir, relPath) {
   const entries = fs.readdirSync(dir);
   const ipkFiles = entries.filter(f => f.endsWith('.ipk'));
+
+  // Group by package name and keep only the latest version
+  const versionMap = {};
+  for (const file of latestIpkFiles) {
+    const match = file.match(/^(.*?)_([^-_]+-[^-_]+)\.ipk$/);
+    if (!match) continue;
+    const name = match[1];
+    const version = match[2];
+    if (!versionMap[name] || version > versionMap[name].version) {
+      versionMap[name] = { file, version };
+    }
+  }
+  const latestIpkFiles = Object.values(versionMap).map(obj => obj.file);
+
   if (ipkFiles.length === 0) return;
 
   const packages = [];
-  for (const file of ipkFiles) {
+  for (const file of latestIpkFiles) {
     const ipkPath = path.join(dir, file);
     const control = extractControlFromIpk(ipkPath);
     if (!control) continue;

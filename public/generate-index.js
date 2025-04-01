@@ -51,21 +51,20 @@ function extractControlFromIpk(ipkPath) {
 function generatePackagesFiles(dir, relPath) {
   const entries = fs.readdirSync(dir);
   const ipkFiles = entries.filter(f => f.endsWith('.ipk'));
-
-// Group by package name and keep only the latest version
-const versionMap = {};
-for (const file of latestIpkFiles) {
-  const match = file.match(/^(.*?)_([^-_]+-[^-_]+)\.ipk$/);
-  if (!match) continue;
-  const name = match[1];
-  const version = match[2];
-  if (!versionMap[name] || version > versionMap[name].version) {
-    versionMap[name] = { file, version };
-  }
-}
-const latestIpkFiles = Object.values(versionMap).map(obj => obj.file);
-
   if (ipkFiles.length === 0) return;
+
+  // Фильтрация: только последние версии
+  const versionMap = {};
+  for (const file of ipkFiles) {
+    const match = file.match(/^(.*?)_([^-_]+-[^-_]+)\.ipk$/);
+    if (!match) continue;
+    const name = match[1];
+    const version = match[2];
+    if (!versionMap[name] || version > versionMap[name].version) {
+      versionMap[name] = { file, version };
+    }
+  }
+  const latestIpkFiles = Object.values(versionMap).map(obj => obj.file);
 
   const packages = [];
   for (const file of latestIpkFiles) {
@@ -110,8 +109,8 @@ function generateIndexForDir(currentPath, rootDirAbs, rootDirRel) {
   const fullPathFromRepo = path.posix.join(rootDirRel, relativePathFromRoot);
   const folderUrl = `/${fullPathFromRepo}/`.replace(/\/+/g, '/');
   const baseHref = `${repoBaseUrl}/${fullPathFromRepo}/`
-  .replace(/\\\\+/g, '/')    // ← двойной бэкслэш для JS-строки!
-  .replace(/([^:]\/)\/+/g, '$1');
+    .replace(/\\\\+/g, '/')
+    .replace(/([^:]\/)\/+/g, '$1');
 
   const files = entries.filter(e => e.isFile() && e.name !== 'index.html')
     .map(e => ({ name: e.name, size: formatSize(fs.statSync(path.join(currentPath, e.name)).size) }))

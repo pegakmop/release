@@ -11,6 +11,9 @@ const rootDirs = ['keenetic'];
 const isGitHubCI = process.env.GITHUB_ACTIONS === 'true';
 const repoRoot = isGitHubCI ? path.resolve(process.cwd()) : __dirname;
 
+const cssContent = fs.readFileSync(path.join(__dirname, 'packages.css'), 'utf8');
+const jsContent = fs.readFileSync(path.join(__dirname, 'list.min.js'), 'utf8');
+
 function formatSize(bytes) {
   const units = ['B', 'KB', 'MB', 'GB'];
   let i = 0;
@@ -53,7 +56,6 @@ function generatePackagesFiles(dir, relPath) {
   const ipkFiles = entries.filter(f => f.endsWith('.ipk'));
   if (ipkFiles.length === 0) return;
 
-  // Оставляем только последнюю версию каждого пакета
   const versionMap = {};
   for (const file of ipkFiles) {
     const match = file.match(/^(.*?)_([^-_]+-[^-_]+)\.ipk$/);
@@ -64,6 +66,7 @@ function generatePackagesFiles(dir, relPath) {
       versionMap[name] = { file, version };
     }
   }
+
   const latestIpkFiles = Object.values(versionMap).map(obj => obj.file);
 
   const packages = [];
@@ -86,6 +89,7 @@ function generatePackagesFiles(dir, relPath) {
       `Description: ${control.Description || ''}`,
       ''
     ].join('\n');
+
     packages.push(entry);
   }
 
@@ -93,25 +97,25 @@ function generatePackagesFiles(dir, relPath) {
   fs.writeFileSync(path.join(dir, 'Packages'), allText);
   fs.writeFileSync(path.join(dir, 'Packages.gz'), zlib.gzipSync(allText));
 
-  // Создаём HTML в стиле Entware
-  const htmlRows = packages.map(pkg => {
+  const rows = packages.map(pkg => {
     const lines = pkg.split('\n');
-    const name = (lines.find(l => l.startsWith('Filename:')) || '').split(':')[1]?.trim() || '';
-    const ver = (lines.find(l => l.startsWith('Version:')) || '').split(':')[1]?.trim() || '';
-    const sec = (lines.find(l => l.startsWith('Section:')) || '').split(':')[1]?.trim() || '';
-    const desc = (lines.find(l => l.startsWith('Description:')) || '').split(':')[1]?.trim() || '';
-    return `<tr><td class="name"><a href="${name}">${name}</a></td><td class="version">${ver}</td><td class="section">${sec}</td><td class="description">${desc}</td></tr>`;
+    const data = {};
+    for (const line of lines) {
+      const [key, ...rest] = line.split(':');
+      if (!key || !rest) continue;
+      data[key.trim()] = rest.join(':').trim();
+    }
+    const filename = data.Filename;
+    return `<tr><td class="name"><a href="${filename}">${data.Package}</a></td><td class="version">${data.Version}</td><td class="section">${data.Section}</td><td class="description">${data.Description}</td></tr>`;
   }).join('\n');
 
-  const html = `<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+  const html = `<!DOCTYPE html>
 <html>
-<!-- Designed and coded by Entware team -->
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <title>Packages list</title>
-  <link rel="stylesheet" type="text/css" href="/css/packages.css">
+<meta charset="UTF-8">
+<title>Packages in /${relPath}</title>
+<style>${cssContent}</style>
 </head>
-<script type="text/javascript" src="/js/list.min.js"></script>
 <body>
 <div id="packages">
 You may sort table by clicking any column headers and/or use <input class="search" placeholder="Search" /> field.
@@ -125,16 +129,18 @@ You may sort table by clicking any column headers and/or use <input class="searc
 </tr>
 </thead>
 <tbody class="list">
-${htmlRows}
+${rows}
 </tbody>
 </table>
 </div>
-<script type="text/javascript">
+<script>${jsContent}</script>
+<script>
   var options = { valueNames: [ 'name', 'version', 'section', 'description' ] };
   var userList = new List('packages', options);
 </script>
 </body>
 </html>`;
+
   fs.writeFileSync(path.join(dir, 'Packages.html'), html);
   console.log(`📦 Packages.{gz,html} created in ${relPath}`);
 }
@@ -147,8 +153,8 @@ function generateIndexForDir(currentPath, rootDirAbs, rootDirRel) {
   const fullPathFromRepo = path.posix.join(rootDirRel, relativePathFromRoot);
   const folderUrl = `/${fullPathFromRepo}/`.replace(/\/+/g, '/');
   const baseHref = `${repoBaseUrl}/${fullPathFromRepo}/`
-    .replace(/\\\\+/g, '/')
-    .replace(/([^:]\/)\/+/g, '$1');
+    .replace(/\\+/g, '/')
+    .replace(/([^:]\/)/g, '$1');
 
   const files = entries.filter(e => e.isFile() && e.name !== 'index.html')
     .map(e => ({ name: e.name, size: formatSize(fs.statSync(path.join(currentPath, e.name)).size) }))
@@ -185,8 +191,8 @@ h1 { margin-bottom: 1em; }
   for (const row of rows) {
     html += `<tr><td><a href="${row.href}">${row.name}</a></td><td class="size">${row.size}</td></tr>\n`;
   }
-
   html += '</table></body></html>';
+
   fs.writeFileSync(path.join(currentPath, 'index.html'), html, 'utf-8');
   console.log(`✔ index.html created in ${folderUrl}`);
 }

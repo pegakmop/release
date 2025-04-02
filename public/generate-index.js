@@ -23,7 +23,7 @@ function formatSize(bytes) {
 
 function parseControlFields(content) {
   const result = {};
-  content.split('\\n').forEach(line => {
+  content.split('\n').forEach(line => {
     const [key, ...rest] = line.split(':');
     if (key && rest.length) {
       result[key.trim()] = rest.join(':').trim();
@@ -51,21 +51,20 @@ function extractControlFromIpk(ipkPath) {
 function generatePackagesFiles(dir, relPath) {
   const entries = fs.readdirSync(dir);
   const ipkFiles = entries.filter(f => f.endsWith('.ipk'));
-
-// Group by package name and keep only the latest version
-const versionMap = {};
-for (const file of latestIpkFiles) {
-  const match = file.match(/^(.*?)_([^-_]+-[^-_]+)\.ipk$/);
-  if (!match) continue;
-  const name = match[1];
-  const version = match[2];
-  if (!versionMap[name] || version > versionMap[name].version) {
-    versionMap[name] = { file, version };
-  }
-}
-const latestIpkFiles = Object.values(versionMap).map(obj => obj.file);
-
   if (ipkFiles.length === 0) return;
+
+  // Оставляем только последнюю версию каждого пакета
+  const versionMap = {};
+  for (const file of ipkFiles) {
+    const match = file.match(/^(.*?)_([^-_]+-[^-_]+)\.ipk$/);
+    if (!match) continue;
+    const name = match[1];
+    const version = match[2];
+    if (!versionMap[name] || version > versionMap[name].version) {
+      versionMap[name] = { file, version };
+    }
+  }
+  const latestIpkFiles = Object.values(versionMap).map(obj => obj.file);
 
   const packages = [];
   for (const file of latestIpkFiles) {
@@ -86,31 +85,25 @@ const latestIpkFiles = Object.values(versionMap).map(obj => obj.file);
       `Size: ${stats.size}`,
       `Description: ${control.Description || ''}`,
       ''
-    ].join('\\n');
-
+    ].join('\n');
     packages.push(entry);
   }
 
-  const allText = packages.join('\\n');
+  const allText = packages.join('\n');
   fs.writeFileSync(path.join(dir, 'Packages'), allText);
   fs.writeFileSync(path.join(dir, 'Packages.gz'), zlib.gzipSync(allText));
 
+  // Создаём HTML в стиле Entware
   const htmlRows = packages.map(pkg => {
-  const lines = pkg.split('
-');
-  const nameMatch = lines.find(line => line.startsWith('Filename:'));
-  const name = nameMatch ? nameMatch.split(':')[1].trim() : 'unknown';
-  const verMatch = lines.find(line => line.startsWith('Version:'));
-  const ver = verMatch ? verMatch.split(':')[1].trim() : '';
-  const sectionMatch = lines.find(line => line.startsWith('Section:'));
-  const section = sectionMatch ? sectionMatch.split(':')[1].trim() : '';
-  const descMatch = lines.find(line => line.startsWith('Description:'));
-  const desc = descMatch ? descMatch.split(':')[1].trim() : '';
-  return `<tr><td class="name"><a href="${name}">${name}</a></td><td class="version">${ver}</td><td class="section">${section}</td><td class="description">${desc}</td></tr>`;
-}).join('
-');
+    const lines = pkg.split('\n');
+    const name = (lines.find(l => l.startsWith('Filename:')) || '').split(':')[1]?.trim() || '';
+    const ver = (lines.find(l => l.startsWith('Version:')) || '').split(':')[1]?.trim() || '';
+    const sec = (lines.find(l => l.startsWith('Section:')) || '').split(':')[1]?.trim() || '';
+    const desc = (lines.find(l => l.startsWith('Description:')) || '').split(':')[1]?.trim() || '';
+    return `<tr><td class="name"><a href="${name}">${name}</a></td><td class="version">${ver}</td><td class="section">${sec}</td><td class="description">${desc}</td></tr>`;
+  }).join('\n');
 
-const html = `<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+  const html = `<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <!-- Designed and coded by Entware team -->
 <head>
@@ -122,7 +115,6 @@ const html = `<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.o
 <body>
 <div id="packages">
 You may sort table by clicking any column headers and/or use <input class="search" placeholder="Search" /> field.
-
 <table>
 <thead>
 <tr>
@@ -143,8 +135,7 @@ ${htmlRows}
 </script>
 </body>
 </html>`;
-fs.writeFileSync(path.join(dir, 'Packages.html'), html);
-
+  fs.writeFileSync(path.join(dir, 'Packages.html'), html);
   console.log(`📦 Packages.{gz,html} created in ${relPath}`);
 }
 
@@ -156,8 +147,8 @@ function generateIndexForDir(currentPath, rootDirAbs, rootDirRel) {
   const fullPathFromRepo = path.posix.join(rootDirRel, relativePathFromRoot);
   const folderUrl = `/${fullPathFromRepo}/`.replace(/\/+/g, '/');
   const baseHref = `${repoBaseUrl}/${fullPathFromRepo}/`
-  .replace(/\\\\+/g, '/')    // ← двойной бэкслэш для JS-строки!
-  .replace(/([^:]\/)\/+/g, '$1');
+    .replace(/\\\\+/g, '/')
+    .replace(/([^:]\/)\/+/g, '$1');
 
   const files = entries.filter(e => e.isFile() && e.name !== 'index.html')
     .map(e => ({ name: e.name, size: formatSize(fs.statSync(path.join(currentPath, e.name)).size) }))
@@ -192,10 +183,10 @@ h1 { margin-bottom: 1em; }
 <table>`;
 
   for (const row of rows) {
-    html += `<tr><td><a href="${row.href}">${row.name}</a></td><td class="size">${row.size}</td></tr>\\n`;
+    html += `<tr><td><a href="${row.href}">${row.name}</a></td><td class="size">${row.size}</td></tr>\n`;
   }
-  html += '</table></body></html>';
 
+  html += '</table></body></html>';
   fs.writeFileSync(path.join(currentPath, 'index.html'), html, 'utf-8');
   console.log(`✔ index.html created in ${folderUrl}`);
 }

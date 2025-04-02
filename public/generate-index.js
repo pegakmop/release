@@ -51,20 +51,21 @@ function extractControlFromIpk(ipkPath) {
 function generatePackagesFiles(dir, relPath) {
   const entries = fs.readdirSync(dir);
   const ipkFiles = entries.filter(f => f.endsWith('.ipk'));
-  if (ipkFiles.length === 0) return;
 
-  // Фильтрация: только последние версии
-  const versionMap = {};
-  for (const file of ipkFiles) {
-    const match = file.match(/^(.*?)_([^-_]+-[^-_]+)\.ipk$/);
-    if (!match) continue;
-    const name = match[1];
-    const version = match[2];
-    if (!versionMap[name] || version > versionMap[name].version) {
-      versionMap[name] = { file, version };
-    }
+// Group by package name and keep only the latest version
+const versionMap = {};
+for (const file of latestIpkFiles) {
+  const match = file.match(/^(.*?)_([^-_]+-[^-_]+)\.ipk$/);
+  if (!match) continue;
+  const name = match[1];
+  const version = match[2];
+  if (!versionMap[name] || version > versionMap[name].version) {
+    versionMap[name] = { file, version };
   }
-  const latestIpkFiles = Object.values(versionMap).map(obj => obj.file);
+}
+const latestIpkFiles = Object.values(versionMap).map(obj => obj.file);
+
+  if (ipkFiles.length === 0) return;
 
   const packages = [];
   for (const file of latestIpkFiles) {
@@ -94,10 +95,56 @@ function generatePackagesFiles(dir, relPath) {
   fs.writeFileSync(path.join(dir, 'Packages'), allText);
   fs.writeFileSync(path.join(dir, 'Packages.gz'), zlib.gzipSync(allText));
 
-  const html = `<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Packages in /${relPath}</title></head>
-<body><h1>Packages in /${relPath}</h1><pre>${allText}</pre></body></html>`;
-  fs.writeFileSync(path.join(dir, 'Packages.html'), html);
+  const htmlRows = packages.map(pkg => {
+  const lines = pkg.split('
+');
+  const nameMatch = lines.find(line => line.startsWith('Filename:'));
+  const name = nameMatch ? nameMatch.split(':')[1].trim() : 'unknown';
+  const verMatch = lines.find(line => line.startsWith('Version:'));
+  const ver = verMatch ? verMatch.split(':')[1].trim() : '';
+  const sectionMatch = lines.find(line => line.startsWith('Section:'));
+  const section = sectionMatch ? sectionMatch.split(':')[1].trim() : '';
+  const descMatch = lines.find(line => line.startsWith('Description:'));
+  const desc = descMatch ? descMatch.split(':')[1].trim() : '';
+  return `<tr><td class="name"><a href="${name}">${name}</a></td><td class="version">${ver}</td><td class="section">${section}</td><td class="description">${desc}</td></tr>`;
+}).join('
+');
+
+const html = `<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<!-- Designed and coded by Entware team -->
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+  <title>Packages list</title>
+  <link rel="stylesheet" type="text/css" href="/css/packages.css">
+</head>
+<script type="text/javascript" src="/js/list.min.js"></script>
+<body>
+<div id="packages">
+You may sort table by clicking any column headers and/or use <input class="search" placeholder="Search" /> field.
+
+<table>
+<thead>
+<tr>
+<th class="sort" data-sort="name">Name</th>
+<th class="sort" data-sort="version">Version</th>
+<th class="sort" data-sort="section">Section</th>
+<th class="sort">Description</th>
+</tr>
+</thead>
+<tbody class="list">
+${htmlRows}
+</tbody>
+</table>
+</div>
+<script type="text/javascript">
+  var options = { valueNames: [ 'name', 'version', 'section', 'description' ] };
+  var userList = new List('packages', options);
+</script>
+</body>
+</html>`;
+fs.writeFileSync(path.join(dir, 'Packages.html'), html);
+
   console.log(`📦 Packages.{gz,html} created in ${relPath}`);
 }
 
@@ -109,8 +156,8 @@ function generateIndexForDir(currentPath, rootDirAbs, rootDirRel) {
   const fullPathFromRepo = path.posix.join(rootDirRel, relativePathFromRoot);
   const folderUrl = `/${fullPathFromRepo}/`.replace(/\/+/g, '/');
   const baseHref = `${repoBaseUrl}/${fullPathFromRepo}/`
-    .replace(/\\\\+/g, '/')
-    .replace(/([^:]\/)\/+/g, '$1');
+  .replace(/\\\\+/g, '/')    // ← двойной бэкслэш для JS-строки!
+  .replace(/([^:]\/)\/+/g, '$1');
 
   const files = entries.filter(e => e.isFile() && e.name !== 'index.html')
     .map(e => ({ name: e.name, size: formatSize(fs.statSync(path.join(currentPath, e.name)).size) }))

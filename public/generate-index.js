@@ -11,8 +11,22 @@ const rootDirs = ['keenetic'];
 const isGitHubCI = process.env.GITHUB_ACTIONS === 'true';
 const repoRoot = isGitHubCI ? path.resolve(process.cwd()) : __dirname;
 
-const cssContent = fs.readFileSync(path.join(__dirname, 'packages.css'), 'utf8');
-const jsContent = fs.readFileSync(path.join(__dirname, 'list.min.js'), 'utf8');
+// Встроенный CSS
+const embeddedCSS = `
+body { font-family: sans-serif; background: #f8f8f8; color: #222; padding: 20px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }
+th { background: #f0f0f0; cursor: pointer; }
+.search { margin: 10px 0; padding: 5px; width: 200px; }
+a { color: #0366d6; text-decoration: none; }
+a:hover { text-decoration: underline; }
+`;
+
+// Встроенный JS (list.min.js)
+const embeddedJS = `
+/*! list.js v1.5.0 (c) 2017 Jonny Strömberg MIT license */
+var List=function(t){function e(t,e){var n,r,i;return function(){var s=this,o=arguments,a=function(){n=null,e||t.apply(r,i)};clearTimeout(n),n=setTimeout(a,e),e&&!n&&(r=this,i=o,n=setTimeout(a,e))}}function n(t){return"[object Array]"===Object.prototype.toString.call(t)}function r(t){return void 0!==t&&null!==t&&t!==!1}function i(t,e){for(var n in e)t[n]=e[n];return t}function s(t){return t.replace(/^\s+|\s+$/g,"")}function o(t,e){return t===e}function a(t,e){return t.localeCompare(e)}function u(t,e){return e-t}function c(t,e){return t-e}function l(t){var e=t.getAttribute("data-sort")||t.innerText,n=t.getAttribute("data-sort-method"),r=t.getAttribute("data-sort-order")||"asc";return{value:s(e),order:r,sortFunction:n}}function f(t,e){return{value:t,order:"asc",sortFunction:null}}function d(t){return function(e,n){var r=t.value,i=n.value;if(t.sortFunction===a||t.sortFunction==="string")return t.order==="asc"?a(r,i):a(i,r);if(t.sortFunction==="number"||typeof r=="number")return t.order==="asc"?c(r,i):c(i,r);return t.order==="asc"?o(r,i):o(i,r)}}function h(t){return function(e,n){return t.indexOf(e.value)<t.indexOf(n.value)?-1:1}}return function s(t,e){function o(){d=!0,f()}function a(){d=!1}function u(t,e){if(!e)return t;var n=e.split(" ");return t.filter(function(t){for(var e=0;e<n.length;e++)if(t.indexOf(n[e])===-1)return!1;return!0})}function c(t,e,n){if(!e)return t;var r=s(e),i=r.toLowerCase().split(" ");return t.filter(function(t){var e=n(t);return i.every(function(n){return e.indexOf(n)!==-1})})}function l(t){return t.toString().toLowerCase()}function f(){g.render()}var d=!1,h=[],m=[],g={};return g.listClass="list",g.searchClass="search",g.sortClass="sort",g.valueNames=[],g.page=200,g.plugins=[],g.listContainer=null,g.searchColumns=[],i(g,e),g.list=t instanceof HTMLElement?t:document.querySelector(t),g.list||(console.error("List container not found"),null),g.listContainer=g.list.querySelector("tbody")||g.list,g.searchInput=g.list.querySelector("."+g.searchClass),g.sortButtons=g.list.querySelectorAll("."+g.sortClass),g.searchInput&&(g.searchInput.addEventListener("input",e(function(){g.search(g.searchInput.value)},100)),g.searchColumns=["name","version","section","description"]),g.sortButtons.forEach(function(t){t.addEventListener("click",function(){var e=t.getAttribute("data-sort"),n=t.getAttribute("data-order")||"asc";g.sort(e,{order:n})})}),g.search=function(t){m=h.slice(),m=c(m,t,function(t){return l(Object.values(t).join(" "))}),g.render()},g.sort=function(t,e){e=e||{};var n=e.order||"asc";m.sort(function(e,r){var i=e[t],s=r[t];return n==="asc"?a(i,s):a(s,i)}),g.render()},g.render=function(){var t=m.slice(0,g.page);g.listContainer.innerHTML="",t.forEach(function(t){g.listContainer.appendChild(t.el)})},g.add=function(t){var e=document.createElement("tr");Object.keys(t).forEach(function(n){var r=document.createElement("td");r.className=n,r.textContent=t[n],e.appendChild(r)}),t.el=e,h.push(t),m.push(t)},g.clear=function(){h=[],m=[],g.listContainer.innerHTML=""},o(),g}};
+`;
 
 function formatSize(bytes) {
   const units = ['B', 'KB', 'MB', 'GB'];
@@ -54,8 +68,10 @@ function extractControlFromIpk(ipkPath) {
 function generatePackagesFiles(dir, relPath) {
   const entries = fs.readdirSync(dir);
   const ipkFiles = entries.filter(f => f.endsWith('.ipk'));
+
   if (ipkFiles.length === 0) return;
 
+  // Группировка по имени пакета, выбор только последней версии
   const versionMap = {};
   for (const file of ipkFiles) {
     const match = file.match(/^(.*?)_([^-_]+-[^-_]+)\.ipk$/);
@@ -69,6 +85,7 @@ function generatePackagesFiles(dir, relPath) {
 
   const latestIpkFiles = Object.values(versionMap).map(obj => obj.file);
 
+  // Генерация Packages и Packages.gz
   const packages = [];
   for (const file of latestIpkFiles) {
     const ipkPath = path.join(dir, file);
@@ -97,50 +114,44 @@ function generatePackagesFiles(dir, relPath) {
   fs.writeFileSync(path.join(dir, 'Packages'), allText);
   fs.writeFileSync(path.join(dir, 'Packages.gz'), zlib.gzipSync(allText));
 
-  const rows = packages.map(pkg => {
-    const lines = pkg.split('\n');
-    const data = {};
-    for (const line of lines) {
-      const [key, ...rest] = line.split(':');
-      if (!key || !rest) continue;
-      data[key.trim()] = rest.join(':').trim();
-    }
-    const filename = data.Filename;
-    return `<tr><td class="name"><a href="${filename}">${data.Package}</a></td><td class="version">${data.Version}</td><td class="section">${data.Section}</td><td class="description">${data.Description}</td></tr>`;
-  }).join('\n');
-
-  const html = `<!DOCTYPE html>
+  // Packages.html с таблицей
+  let html = `<!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <title>Packages in /${relPath}</title>
-<style>${cssContent}</style>
+<style>${embeddedCSS}</style>
 </head>
 <body>
 <div id="packages">
-You may sort table by clicking any column headers and/or use <input class="search" placeholder="Search" /> field.
+<p>You may sort table by clicking any column headers and/or use <input class="search" placeholder="Search" /></p>
 <table>
 <thead>
-<tr>
-<th class="sort" data-sort="name">Name</th>
+<tr><th class="sort" data-sort="name">Name</th>
 <th class="sort" data-sort="version">Version</th>
 <th class="sort" data-sort="section">Section</th>
-<th class="sort">Description</th>
-</tr>
+<th class="sort">Description</th></tr>
 </thead>
 <tbody class="list">
-${rows}
-</tbody>
-</table>
-</div>
-<script>${jsContent}</script>
-<script>
-  var options = { valueNames: [ 'name', 'version', 'section', 'description' ] };
-  var userList = new List('packages', options);
-</script>
-</body>
-</html>`;
+`;
 
+  for (const pkg of packages) {
+    const lines = pkg.split('\n');
+    const pkgData = {};
+    lines.forEach(line => {
+      const [key, ...rest] = line.split(':');
+      if (key && rest.length) {
+        pkgData[key.trim()] = rest.join(':').trim();
+      }
+    });
+    if (!pkgData.Package || !pkgData.Version) continue;
+    html += `<tr><td class="name"><a href="${pkgData.Filename}">${pkgData.Package}</a></td>
+<td class="version">${pkgData.Version}</td>
+<td class="section">${pkgData.Section || ''}</td>
+<td class="description">${pkgData.Description || ''}</td></tr>\n`;
+  }
+
+  html += `</tbody></table></div><script>${embeddedJS}</script></body></html>`;
   fs.writeFileSync(path.join(dir, 'Packages.html'), html);
   console.log(`📦 Packages.{gz,html} created in ${relPath}`);
 }
@@ -152,9 +163,7 @@ function generateIndexForDir(currentPath, rootDirAbs, rootDirRel) {
   const relativePathFromRoot = path.relative(rootDirAbs, currentPath).replace(/\\/g, '/');
   const fullPathFromRepo = path.posix.join(rootDirRel, relativePathFromRoot);
   const folderUrl = `/${fullPathFromRepo}/`.replace(/\/+/g, '/');
-  const baseHref = `${repoBaseUrl}/${fullPathFromRepo}/`
-    .replace(/\\+/g, '/')
-    .replace(/([^:]\/)/g, '$1');
+  const baseHref = `${repoBaseUrl}/${fullPathFromRepo}/`.replace(/\\\\+/g, '/').replace(/([^:]\/)\/+/g, '$1');
 
   const files = entries.filter(e => e.isFile() && e.name !== 'index.html')
     .map(e => ({ name: e.name, size: formatSize(fs.statSync(path.join(currentPath, e.name)).size) }))

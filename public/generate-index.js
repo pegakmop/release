@@ -22,12 +22,8 @@ a:hover { text-decoration: underline; }
 `;
 
 function compareVersions(v1, v2) {
-  // Представляем версию как строку с числовым суффиксом после тире
-  const getNumericVersion = v => {
-    const match = v.match(/-(\d+)$/);
-    return match ? parseInt(match[1].padStart(4, '0')) : 0;
-  };
-  return getNumericVersion(v1) - getNumericVersion(v2);
+  const normalize = v => v.replace(/[^0-9]/g, '').padStart(8, '0');
+  return parseInt(normalize(v1)) - parseInt(normalize(v2));
 }
 
 function formatSize(bytes) {

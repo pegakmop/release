@@ -4,7 +4,7 @@ echo "Updating package list..."
 opkg update
 
 echo "Installing wget with HTTPS support..."
-opkg install wget-ssl curl vim nano
+opkg install wget-ssl curl vim nano ca-certificates
 opkg remove wget-nossl
 
 echo "Detecting system architecture (via opkg)..."

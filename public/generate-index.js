@@ -22,16 +22,12 @@ a:hover { text-decoration: underline; }
 `;
 
 function compareVersions(v1, v2) {
-  const parts1 = v1.split(/[-+]/)[0].split('.').map(Number);
-  const parts2 = v2.split(/[-+]/)[0].split('.').map(Number);
-  const len = Math.max(parts1.length, parts2.length);
-  for (let i = 0; i < len; i++) {
-    const a = parts1[i] || 0;
-    const b = parts2[i] || 0;
-    if (a > b) return 1;
-    if (a < b) return -1;
-  }
-  return 0;
+  // Представляем версию как строку с числовым суффиксом после тире
+  const getNumericVersion = v => {
+    const match = v.match(/-(\d+)$/);
+    return match ? parseInt(match[1].padStart(4, '0')) : 0;
+  };
+  return getNumericVersion(v1) - getNumericVersion(v2);
 }
 
 function formatSize(bytes) {

@@ -13,7 +13,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
       padding: 20px;
       text-align: center;
@@ -48,6 +48,13 @@
     button:hover {
       background-color: #0056b3;
     }
+    .copy-status {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #28a745;
+      font-weight: bold;
+      word-wrap: break-word;
+    }
   </style>
 </head>
 <body>
@@ -56,31 +63,24 @@
      If you're here, you probably know what you're doing.</p>
   <p><small>Tip: direct file links work, like <code>/setup.sh</code></small></p>
   <p>All rights belong to: <a href='https://github.com/Ground-Zerro'>@Ground-Zerro</a></p>
-  <p><a href='https://ground-zerro.github.io/release/keenetic/'>original Ground-Zerro Index of /keenetic/</a></p>
-  <p>Install HydraRoute on Keenetic router, enter terminal commands:</p>
-  <pre id="cmd">curl -fsSL https://ground-zerro.github.io/release/keenetic/install-feed.sh | sh</pre>
-  <button onclick="copyToClipboard()">Copy ground-zerro Command</button>
-  
-  <p><a href='https://pegakmop.github.io/release/keenetic/'>pegakmop Index of /keenetic/</a></p>
-  <p>Install HydraRoute on Keenetic router, enter terminal commands:</p>
-  <pre id="cmd1">curl -fsSL https://pegakmop.github.io/release/keenetic/install-feed.sh | sh</pre>
-  <button onclick="copyToClipboard1()">Copy pegakmop Command</button>
+
+  <p><a href='https://ground-zerro.github.io/release/keenetic/'>Original Ground-Zerro Index of /keenetic/</a></p>
+  <p>Install HydraRoute on Keenetic router, enter terminal command:</p>
+  <pre id="cmd1">curl -fsSL https://ground-zerro.github.io/release/keenetic/install-feed.sh | sh</pre>
+  <button onclick="copyToClipboard('cmd1', 'status1')">Copy Ground-Zerro Command</button>
+  <p id="status1" class="copy-status"></p>
+
+  <p><a href='https://pegakmop.github.io/release/keenetic/'>Pegakmop Index of /keenetic/</a></p>
+  <p>Install HydraRoute on Keenetic router, enter terminal command:</p>
+  <pre id="cmd2">curl -fsSL https://pegakmop.github.io/release/keenetic/install-feed.sh | sh</pre>
+  <button onclick="copyToClipboard('cmd2', 'status2')">Copy Pegakmop Command</button>
+  <p id="status2" class="copy-status"></p>
 
   <script>
-    function copyToClipboard() {
-      const cmd = document.getElementById("cmd").innerText;
-      navigator.clipboard.writeText(cmd).then(() => {
-        alert("Command copied!");
-      }).catch(err => {
-        console.error("Copy failed: ", err);
-      });
-    }
-  </script>
-  <script>
-    function copyToClipboard1() {
-      const cmd1 = document.getElementById("cmd1").innerText;
-      navigator.clipboard.writeText(cmd1).then(() => {
-        alert("Command copied!");
+    function copyToClipboard(cmdId, statusId) {
+      const text = document.getElementById(cmdId).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        document.getElementById(statusId).innerText = `Command copied!\n${text}`;
       }).catch(err => {
         console.error("Copy failed: ", err);
       });

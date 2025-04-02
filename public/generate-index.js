@@ -11,6 +11,16 @@ const rootDirs = ['keenetic'];
 const isGitHubCI = process.env.GITHUB_ACTIONS === 'true';
 const repoRoot = isGitHubCI ? path.resolve(process.cwd()) : __dirname;
 
+const embeddedCSS = `
+body { font-family: sans-serif; background: #f8f8f8; color: #222; padding: 20px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }
+th { background: #f0f0f0; cursor: pointer; }
+.search { margin: 10px 0; padding: 5px; width: 200px; }
+a { color: #0366d6; text-decoration: none; }
+a:hover { text-decoration: underline; }
+`;
+
 function compareVersions(v1, v2) {
   const parts1 = v1.split(/[-+]/)[0].split('.').map(Number);
   const parts2 = v2.split(/[-+]/)[0].split('.').map(Number);
@@ -105,8 +115,18 @@ function generatePackagesFiles(dir, relPath) {
   fs.writeFileSync(path.join(dir, 'Packages'), allText);
   fs.writeFileSync(path.join(dir, 'Packages.gz'), zlib.gzipSync(allText));
 
-  let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Packages in /${relPath}</title></head><body>`;
-  html += '<table><thead><tr><th>Name</th><th>Version</th><th>Section</th><th>Description</th></tr></thead><tbody>';
+  let html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Packages in /${relPath}</title>
+<style>${embeddedCSS}</style>
+</head>
+<body>
+<h1>Packages in /${relPath}</h1>
+<table>
+<thead><tr><th>Name</th><th>Version</th><th>Section</th><th>Description</th></tr></thead>
+<tbody>`;
   for (const pkg of packages) {
     const lines = pkg.split('\n');
     const data = {};
@@ -148,12 +168,24 @@ function generateIndexForDir(currentPath, rootDirAbs, rootDirRel) {
     ...files.map(f => ({ ...f, href: `${baseHref}${encodeURI(f.name)}` }))
   ];
 
-  let html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Index of ${folderUrl}</title></head><body><h1>Index of ${folderUrl}</h1><table>`;
+  let html = `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<title>Index of ${folderUrl}</title>
+<style>
+body { font-family: monospace; padding: 2em; background: #fafafa; color: #333; }
+table { width: 100%; max-width: 800px; border-collapse: collapse; }
+td { padding: 0.3em 0.6em; border-bottom: 1px solid #ddd; }
+td.size { text-align: right; color: #666; white-space: nowrap; }
+a { color: #0366d6; text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { margin-bottom: 1em; }
+</style></head><body>
+<h1>Index of ${folderUrl}</h1>
+<table>`;
   for (const row of rows) {
-    html += `<tr><td><a href="${row.href}">${row.name}</a></td><td style="text-align:right">${row.size}</td></tr>`;
+    html += `<tr><td><a href="${row.href}">${row.name}</a></td><td class="size">${row.size}</td></tr>\n`;
   }
   html += '</table></body></html>';
-
   fs.writeFileSync(path.join(currentPath, 'index.html'), html, 'utf-8');
 }
 

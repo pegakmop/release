@@ -58,8 +58,8 @@ fi
 echo "Updating package list again (with custom feed)..."
 opkg update
 
-echo "Installing hrneo package..."
-opkg install hrneo || echo "Package 'hrneo' not found in feed. Skipping."
+echo "Install hydra command: 'opkg install hrneo' & 'opkg install hydraroute' router package..."
+#opkg install hrneo || echo "Package 'hrneo' & 'hydraroute' not found in feed. Skipping."
 
 # Optional cleanup
 SCRIPT="$0"

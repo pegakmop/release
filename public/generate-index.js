@@ -68,26 +68,37 @@ function generatePackagesFiles(dir, relPath) {
   const ipkFiles = entries.filter(f => f.endsWith('.ipk'));
   if (ipkFiles.length === 0) return;
 
-  const versionMap = {};
+  const packageEntries = [];
+
   for (const file of ipkFiles) {
-    const match = file.match(/^(.*?)_([^-_]+-[^-_]+)\.ipk$/);
-    if (!match) continue;
-    const name = match[1];
-    const version = match[2];
-    if (!versionMap[name] || compareVersions(version, versionMap[name].version) > 0) {
-      versionMap[name] = { file, version };
+    const ipkPath = path.join(dir, file);
+    const control = extractControlFromIpk(ipkPath);
+    if (!control || !control.Package || !control.Version || !control.Architecture) continue;
+
+    packageEntries.push({
+      name: control.Package,
+      version: control.Version,
+      arch: control.Architecture,
+      filename: file,
+      size: fs.statSync(ipkPath).size,
+      control
+    });
+  }
+
+  // Выбор только самых новых версий
+  const latestMap = {};
+  for (const entry of packageEntries) {
+    const key = `${entry.name}_${entry.arch}`;
+    if (!latestMap[key] || compareVersions(entry.version, latestMap[key].version) > 0) {
+      latestMap[key] = entry;
     }
   }
 
-  const latestIpkFiles = Object.values(versionMap).map(obj => obj.file);
+  const finalPackages = Object.values(latestMap);
   const packages = [];
-  for (const file of latestIpkFiles) {
-    const ipkPath = path.join(dir, file);
-    const control = extractControlFromIpk(ipkPath);
-    if (!control) continue;
-
-    const stats = fs.statSync(ipkPath);
-    const entry = [
+  for (const entry of finalPackages) {
+    const control = entry.control;
+    const block = [
       `Package: ${control.Package}`,
       `Version: ${control.Version}`,
       `Architecture: ${control.Architecture}`,
@@ -95,12 +106,12 @@ function generatePackagesFiles(dir, relPath) {
       `Depends: ${control.Depends || ''}`,
       `Section: ${control.Section || 'base'}`,
       `Priority: ${control.Priority || 'optional'}`,
-      `Filename: ${file}`,
-      `Size: ${stats.size}`,
+      `Filename: ${entry.filename}`,
+      `Size: ${entry.size}`,
       `Description: ${control.Description || ''}`,
       ''
     ].join('\n');
-    packages.push(entry);
+    packages.push(block);
   }
 
   const allText = packages.join('\n');
@@ -119,8 +130,8 @@ function generatePackagesFiles(dir, relPath) {
 <table>
 <thead><tr><th>Name</th><th>Version</th><th>Section</th><th>Description</th></tr></thead>
 <tbody>`;
-  for (const pkg of packages) {
-    const lines = pkg.split('\n');
+  for (const block of packages) {
+    const lines = block.split('\n');
     const data = {};
     lines.forEach(line => {
       const [key, ...rest] = line.split(':');

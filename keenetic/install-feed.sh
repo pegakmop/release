@@ -58,8 +58,23 @@ fi
 echo "Updating package list again (with custom feed)..."
 opkg update
 
-echo "Install hydra command: 'opkg install hrneo' & 'opkg install hydraroute' router package..."
+#echo "Install hydra command: 'opkg install hrneo' & 'opkg install hydraroute' router package..."
 #opkg install hrneo || echo "Package 'hrneo' & 'hydraroute' not found in feed. Skipping."
+echo "Выберите пакет для установки:"
+echo "1) hrneo (системный днс используется)"
+echo "2) hydraroute (адгуард как системный днс)"
+read -p "Введите номер (1 или 2): " choice
+
+case "$choice" in
+    1) pkg="hrneo" ;;
+    2) pkg="hydraroute" ;;
+    *) echo "Некорректный ввод. Пропускаю установку пакета." && pkg="" ;;
+esac
+
+if [ -n "$pkg" ]; then
+    echo "Устанавливаю $pkg..."
+    opkg install "$pkg" || echo "Пакет '$pkg' не найден в репозитории. Пропускаю."
+fi
 
 # Optional cleanup
 SCRIPT="$0"
@@ -68,4 +83,4 @@ if [ -f "$SCRIPT" ]; then
   rm "$SCRIPT"
 fi
 
-echo "Setup complete."
+echo "Setup repository complete."

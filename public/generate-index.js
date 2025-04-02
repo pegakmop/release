@@ -23,7 +23,7 @@ function formatSize(bytes) {
 
 function parseControlFields(content) {
   const result = {};
-  content.split('\n').forEach(line => {
+  content.split('\\n').forEach(line => {
     const [key, ...rest] = line.split(':');
     if (key && rest.length) {
       result[key.trim()] = rest.join(':').trim();
@@ -86,12 +86,12 @@ const latestIpkFiles = Object.values(versionMap).map(obj => obj.file);
       `Size: ${stats.size}`,
       `Description: ${control.Description || ''}`,
       ''
-    ].join('\n');
+    ].join('\\n');
 
     packages.push(entry);
   }
 
-  const allText = packages.join('\n');
+  const allText = packages.join('\\n');
   fs.writeFileSync(path.join(dir, 'Packages'), allText);
   fs.writeFileSync(path.join(dir, 'Packages.gz'), zlib.gzipSync(allText));
 
@@ -192,7 +192,7 @@ h1 { margin-bottom: 1em; }
 <table>`;
 
   for (const row of rows) {
-    html += `<tr><td><a href="${row.href}">${row.name}</a></td><td class="size">${row.size}</td></tr>\n`;
+    html += `<tr><td><a href="${row.href}">${row.name}</a></td><td class="size">${row.size}</td></tr>\\n`;
   }
   html += '</table></body></html>';
 

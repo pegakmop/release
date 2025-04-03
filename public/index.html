@@ -65,22 +65,22 @@
   <p>All rights belong to: <a href='https://github.com/Ground-Zerro'>@Ground-Zerro</a></p>
 
   <p><a href='https://ground-zerro.github.io/release/keenetic/'>Original Ground-Zerro Index of /keenetic/</a></p>
-  <p>Install HydraRoute on Keenetic router, enter terminal command:</p>
+  <p>Install HydraRoute & HydraRouteNeo on Keenetic router, enter terminal command:</p>
   <pre id="cmd1">curl -fsSL https://pegakmop.github.io/release/keenetic/install.sh | sh</pre>
-  <button onclick="copyToClipboard('cmd1', 'status1')">Copy Ground-Zerro Command</button>
+  <button onclick="copyToClipboard('cmd1', 'status1')">Copy Ground-Zerro repository Command</button>
   <p id="status1" class="copy-status"></p>
 
   <p><a href='https://pegakmop.github.io/release/keenetic/'>Pegakmop Index of /keenetic/</a></p>
-  <p>Install HydraRoute on Keenetic router, enter terminal command:</p>
+  <p>Install HydraRoute & HydraRoute on Keenetic router, enter terminal command:</p>
   <pre id="cmd2">curl -fsSL https://pegakmop.github.io/release/keenetic/install-feed.sh | sh</pre>
-  <button onclick="copyToClipboard('cmd2', 'status2')">Copy Pegakmop Command</button>
+  <button onclick="copyToClipboard('cmd2', 'status2')">Copy Pegakmop repository Command</button>
   <p id="status2" class="copy-status"></p>
 
   <script>
     function copyToClipboard(cmdId, statusId) {
       const text = document.getElementById(cmdId).innerText;
       navigator.clipboard.writeText(text).then(() => {
-        document.getElementById(statusId).innerText = `Command copied!\n${text}`;
+        document.getElementById(statusId).innerText = `Command terminal copied Clipboard!\n${text}`;
       }).catch(err => {
         console.error("Copy failed: ", err);
       });

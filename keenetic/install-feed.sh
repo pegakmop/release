@@ -58,8 +58,8 @@ fi
 echo "Updating package list again (with custom feed)..."
 opkg update
 
-echo "Installing HydraRoute package..."
-opkg install hydraroute || echo "Package 'hydraroute' not found in feed. Skipping."
+# echo "Installing HydraRoute package..."
+# opkg install hydraroute || echo "Package 'hydraroute' not found in feed. Skipping."
 
 # Optional cleanup
 SCRIPT="$0"

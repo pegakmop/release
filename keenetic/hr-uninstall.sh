@@ -115,7 +115,7 @@ animation $! "Удаление файлов, созданных HydraRoute"
 policy_uninstall >>"$LOG" 2>&1 &
 animation $! "Удаление политик HydraRoute"
 
-dns_on
+dns_on >>"$LOG" 2>&1 &
 animation $! "Включение системного DNS сервера"
 
 echo "Удаление завершено (╥_╥)"

@@ -1,0 +1,21 @@
+Package: hrneo
+Version: 0.0.0-2
+Architecture: mipsel-3.4
+Maintainer: Ground_Zerro
+Depends: ipset, iptables, tcpdump
+Section: net
+Priority: optional
+Filename: hrneo_0.0.0-2_mipsel-3.4.ipk
+Size: 2439032
+Description: HydraRoute Neo - domain-based IP tracking
+
+Package: hydraroute
+Version: 0.0.2-1
+Architecture: mipsel-3.4
+Maintainer: Ground_Zerro
+Depends: adguardhome-go, ipset, iptables, curl, jq
+Section: net
+Priority: optional
+Filename: hydraroute_0.0.2-1_mipsel-3.4.ipk
+Size: 2759785
+Description: HydraRoute - domain routing for Keenetic based on ipset and AGH integration + WebUI control panel

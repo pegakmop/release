@@ -28,7 +28,7 @@ run_with_animation() {
 	local message="$1"
 	shift
 	("$@") &
-	animation $! "$message"
+	animation $! "$message\n"
 }
 
 # Функция для получения списка доступных версий пакета

@@ -1,11 +1,42 @@
 #!/bin/sh
 
-echo "Updating package list..."
-opkg update
+# Анимация ожидания выполнения команды
+animation() {
+	local pid=$1
+	local message=$2
+	local spin='-\|/'
 
-echo "Installing wget with HTTPS support..."
-opkg install wget-ssl
-opkg remove wget-nossl
+	echo -n "$message... "
+
+	while kill -0 $pid 2>/dev/null; do
+		for i in $(seq 0 3); do
+			echo -ne "\b${spin:$i:1}"
+			usleep 100000  # 0.1 сек
+		done
+	done
+
+	wait $pid
+	if [ $? -eq 0 ]; then
+		echo -e "\b✔ Готово!"
+	else
+		echo -e "\b✖ Ошибка!"
+	fi
+}
+
+# Обёртка для запуска команды с анимацией
+run_with_animation() {
+	local message="$1"
+	shift
+	("$@") &
+	animation $! "$message"
+}
+
+echo "Starting setup..."
+
+run_with_animation "Updating package list" opkg update
+
+run_with_animation "Installing wget-ssl" opkg install wget-ssl
+run_with_animation "Removing wget-nossl" opkg remove wget-nossl
 
 echo "Detecting system architecture (via opkg)..."
 ARCH=$(opkg print-architecture | awk '
@@ -55,8 +86,7 @@ else
   echo "$FEED_LINE" >> "$FEED_CONF"
 fi
 
-echo "Updating package list again (with custom feed)..."
-opkg update
+run_with_animation "Updating package list with custom feed" opkg update
 
 # Prompt user to choose a package to install
 echo "Do you want to install 'hydraroute' or 'hrneo'? (Type the name or press Enter to skip):"
@@ -64,8 +94,7 @@ read PACKAGE_NAME
 
 case "$PACKAGE_NAME" in
   hydraroute|hrneo)
-    echo "Installing package: $PACKAGE_NAME..."
-    opkg install "$PACKAGE_NAME" || echo "Package '$PACKAGE_NAME' not found in feed. Skipping."
+    run_with_animation "Installing package: $PACKAGE_NAME" opkg install "$PACKAGE_NAME"
     ;;
   *)
     echo "No valid package selected. Skipping installation."

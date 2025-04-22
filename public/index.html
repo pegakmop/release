@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Release Files</title>
+  <title>Release repository Files</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -13,20 +13,47 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
+      padding: 20px;
+      text-align: center;
     }
     h1 {
       margin-bottom: 0.3em;
     }
     p {
       max-width: 400px;
-      text-align: center;
     }
-    code {
+    code, pre {
       background: #eee;
-      padding: 2px 4px;
+      padding: 8px;
       border-radius: 4px;
+      display: block;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      text-align: left;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 15px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .copy-status {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #28a745;
+      font-weight: bold;
+      word-wrap: break-word;
     }
   </style>
 </head>
@@ -35,5 +62,29 @@
   <p>Just some files. Installers, tools, maybe even magic.<br>
      If you're here, you probably know what you're doing.</p>
   <p><small>Tip: direct file links work, like <code>/setup.sh</code></small></p>
+  <p>All rights belong to: <a href='https://github.com/Ground-Zerro'>@Ground-Zerro</a></p>
+
+  <p><a href='https://ground-zerro.github.io/release/keenetic/'>Original Ground-Zerro Index of /keenetic/</a></p>
+  <p>Install HydraRoute & HydraRouteNeo on Keenetic router, enter terminal command:</p>
+  <pre id="cmd1">curl -fsSL https://pegakmop.github.io/release/keenetic/install.sh | sh</pre>
+  <button onclick="copyToClipboard('cmd1', 'status1')">Copy Ground-Zerro repository Command</button>
+  <p id="status1" class="copy-status"></p>
+
+  <p><a href='https://pegakmop.github.io/release/keenetic/'>Pegakmop Index of /keenetic/</a></p>
+  <p>Install HydraRoute & HydraRoute on Keenetic router, enter terminal command:</p>
+  <pre id="cmd2">curl -fsSL https://pegakmop.github.io/release/keenetic/install-feed.sh | sh</pre>
+  <button onclick="copyToClipboard('cmd2', 'status2')">Copy Pegakmop repository Command</button>
+  <p id="status2" class="copy-status"></p>
+
+  <script>
+    function copyToClipboard(cmdId, statusId) {
+      const text = document.getElementById(cmdId).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        document.getElementById(statusId).innerText = `Command terminal copied Clipboard!\n${text}`;
+      }).catch(err => {
+        console.error("Copy failed: ", err);
+      });
+    }
+  </script>
 </body>
 </html>

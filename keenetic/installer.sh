@@ -13,6 +13,18 @@ get_available_versions() {
     opkg list | grep -E 'hydraroute|hrneo' | awk '{print $1 " - " $2}'
 }
 
+# Функция для проверки, установлен ли пакет, и получения его версии
+get_installed_version() {
+    local package=$1
+    opkg list-installed | grep "^$package " | awk '{print $2}'
+}
+
+# Запуск установки пакета
+install_package() {
+    local package_name=$1
+    run_with_message "Установка пакета: $package_name" opkg install "$package_name"
+}
+
 echo "Запуск установки..."
 
 run_with_message "Обновление списка пакетов..." opkg update
@@ -71,7 +83,7 @@ run_with_message "Обновление списка пакетов с новым
 
 # Подтверждение от пользователя
 echo ""
-echo "Установить один из пакетов из репозитория? (y/n):"
+echo "Установить один из пакетов из репозитория? (y / n или нажмите enter для пропуска установки пакета):"
 read CONFIRM < /dev/tty
 
 if [ "$CONFIRM" = "y" ] || [ "$CONFIRM" = "Y" ]; then
@@ -92,38 +104,32 @@ if [ "$CONFIRM" = "y" ] || [ "$CONFIRM" = "Y" ]; then
 
   while [ $TRIES -lt $MAX_TRIES ]; do
     echo ""
-    echo "Введите имя пакета для установки ('hydraroute' или 'hrneo', или 'n' для пропуска):"
+    echo "Введите имя пакета для установки ('hydraroute' или 'hrneo', ЛИБО 'n' или 'enter' для пропуска):"
     read PACKAGE_NAME < /dev/tty
 
     case "$PACKAGE_NAME" in
       hydraroute|hrneo)
-        # Получаем доступные версии пакета
-        VERSIONS=$(opkg list | grep "^$PACKAGE_NAME" | awk '{print $1 " - " $2}')
-        if [ -z "$VERSIONS" ]; then
-          echo "Не удалось найти доступные версии пакета."
-          break
-        fi
-        
-        echo "Доступные версии пакета $PACKAGE_NAME:"
-        echo "$VERSIONS"
-        echo ""
-        echo "Введите номер версии для установки или нажмите Enter для последней версии:"
-        read VERSION_CHOICE < /dev/tty
+        # Проверка, установлен ли пакет и вывод версии
+        INSTALLED_VERSION=$(get_installed_version "$PACKAGE_NAME")
+        if [ -n "$INSTALLED_VERSION" ]; then
+          echo "$PACKAGE_NAME - $INSTALLED_VERSION уже установлен."
+          echo "Хотите обновить его? (y/n):"
+          read UPDATE < /dev/tty
 
-        # Если версия не указана, то выбираем последнюю
-        if [ -z "$VERSION_CHOICE" ]; then
-          VERSION_CHOICE=$(echo "$VERSIONS" | head -n 1 | awk '{print $1}')
+          if [ "$UPDATE" = "y" ] || [ "$UPDATE" = "Y" ]; then
+            # Обновляем пакет
+            install_package "$PACKAGE_NAME"
+          else
+            echo "Установка пакета $PACKAGE_NAME пропущена."
+          fi
+        else
+          # Установка пакета, если он не установлен
+          install_package "$PACKAGE_NAME"
         fi
-
-        run_with_message "Установка пакета: $VERSION_CHOICE" opkg install "$VERSION_CHOICE"
         break
         ;;
-      n|N|no|No|NO)
-        echo "Установка пакета отменена пользователем."
-        break
-        ;;
-      "")
-        echo "Установка пропущена."
+      n|N|no|No|NO|"" )
+        echo "Установка пакета пропущена."
         break
         ;;
       *)

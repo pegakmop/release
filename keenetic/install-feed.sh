@@ -38,8 +38,8 @@ esac
 echo "Architecture detected: $ARCH"
 echo "Selected feed: $FEED_URL"
 
-FEED_CONF="/opt/etc/opkg/customfeeds.conf"
-FEED_LINE="src/gz ground-zerro $FEED_URL"
+FEED_CONF="/opt/etc/opkg/hydraroute.conf"
+FEED_LINE="src/gz HydraRoute $FEED_URL"
 
 # Ensure the opkg directory exists
 if [ ! -d "/opt/etc/opkg" ]; then

@@ -28,7 +28,7 @@ run_with_animation() {
 	local message="$1"
 	shift
 	("$@") &
-	animation $! "$message\n"
+	animation $! "$message"
 }
 
 # Функция для получения списка доступных версий пакета
@@ -36,13 +36,13 @@ get_available_versions() {
 	opkg list | grep -E 'hydraroute|hrneo' | awk '{print $1 " - " $2}' 
 }
 
-echo "Запуск установки...\n"
+echo "Запуск установки..."
 
-run_with_animation "Обновление списка пакетов\n" opkg update
-run_with_animation "Установка wget с поддержкой HTTPS\n" opkg install wget-ssl
-run_with_animation "Удаление wget без SSL\n" opkg remove wget-nossl
+run_with_animation "Обновление списка пакетов" opkg update
+run_with_animation "Установка wget с поддержкой HTTPS" opkg install wget-ssl
+run_with_animation "Удаление wget без SSL" opkg remove wget-nossl
 
-echo "Определение архитектуры системы...\n"
+echo "Определение архитектуры системы..."
 ARCH=$(opkg print-architecture | awk '
   /^arch/ && $2 !~ /_kn$/ && $2 ~ /-[0-9]+\.[0-9]+$/ {
     print $2; exit
@@ -50,7 +50,7 @@ ARCH=$(opkg print-architecture | awk '
 )
 
 if [ -z "$ARCH" ]; then
-  echo "Не удалось определить архитектуру.\n"
+  echo "Не удалось определить архитектуру."
   exit 1
 fi
 
@@ -70,27 +70,27 @@ case "$ARCH" in
     ;;
 esac
 
-echo "Архитектура: $ARCH \n"
-echo "Выбранный репозиторий: $FEED_URL \n"
+echo "Архитектура: $ARCH"
+echo "Выбранный репозиторий: $FEED_URL"
 
 FEED_CONF="/opt/etc/opkg/hydraroute.conf"
 FEED_LINE="src/gz HydraRoute $FEED_URL"
 
 # Убедимся, что директория конфигурации opkg существует
 if [ ! -d "/opt/etc/opkg" ]; then
-  echo "Создание директории /opt/etc/opkg...\n"
+  echo "Создание директории /opt/etc/opkg..."
   mkdir -p /opt/etc/opkg
 fi
 
 # Добавляем репозиторий, если он ещё не добавлен
 if grep -q "$FEED_URL" "$FEED_CONF" 2>/dev/null; then
-  echo "Репозиторий уже добавлен в $FEED_CONF. Пропускаем.\n"
+  echo "Репозиторий уже добавлен в $FEED_CONF..."
 else
-  echo "Добавление репозитория в $FEED_CONF...\n"
+  echo "Добавление репозитория в $FEED_CONF..."
   echo "$FEED_LINE" >> "$FEED_CONF"
 fi
 
-run_with_animation "Обновление списка пакетов с новым репозиторием\n" opkg update
+run_with_animation "Обновление списка пакетов с новым добавленным репозиторием" opkg update
 
 # Подтверждение от пользователя
 echo ""
@@ -99,9 +99,9 @@ read CONFIRM < /dev/tty
 
 if [ "$CONFIRM" = "y" ] || [ "$CONFIRM" = "Y" ]; then
   echo ""
-  run_with_animation "Чтение списка доступных пакетов\n" get_available_versions || echo "Подходящих пакетов не найдено."
+  run_with_animation "Чтение списка доступных пакетов" get_available_versions || echo "Подходящих пакетов не найдено."
 
-  MAX_TRIES=3
+  MAX_TRIES=1
   TRIES=0
 
   while [ $TRIES -lt $MAX_TRIES ]; do

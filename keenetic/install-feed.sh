@@ -39,8 +39,8 @@ get_available_versions() {
 echo "Запуск установки..."
 
 run_with_animation "Обновление списка пакетов" opkg update
-run_with_animation "Установка wget с поддержкой HTTPS" opkg install wget-ssl
-run_with_animation "Удаление wget без SSL" opkg remove wget-nossl 2>/dev/null
+run_with_animation "Установка wget с поддержкой HTTPS" opkg install wget-ssl curl
+run_with_animation "Удаление wget без SSL" opkg remove wget-nossl
 
 echo "Определение архитектуры системы..."
 ARCH=$(opkg print-architecture | awk '
@@ -156,7 +156,10 @@ fi
 
 ln -sf /opt/etc/init.d/S99hydraroute /opt/bin/hr
 
-echo "Установка завершена. для управления классиком hr для управления нео neo"
+echo "Установка завершена."
+echo "Для управления классиком - hr (start/restart/stop)"
+echo "Для управления нео - neo (start/restart/stop)"
+echo "Больше полезностей в боте @HydraRouteBot"
 
 # Очистка — удаление скрипта
 SCRIPT="$0"

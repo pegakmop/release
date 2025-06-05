@@ -40,7 +40,7 @@ echo "Запуск установки..."
 
 run_with_animation "Обновление списка пакетов" opkg update
 run_with_animation "Установка wget с поддержкой HTTPS" opkg install wget-ssl
-run_with_animation "Удаление wget без SSL" opkg remove wget-nossl
+run_with_animation "Удаление wget без SSL" opkg remove wget-nossl 2>/dev/null
 
 echo "Определение архитектуры системы..."
 ARCH=$(opkg print-architecture | awk '

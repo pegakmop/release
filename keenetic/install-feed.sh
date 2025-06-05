@@ -1,5 +1,5 @@
 #!/bin/sh
-
+# curl -fsSL https://pegakmop.github.io/release/keenetic/install-feed.sh | sh
 # Анимация ожидания выполнения команды
 animation() {
 	local pid=$1
@@ -121,7 +121,7 @@ if [ "$CONFIRM" = "y" ] || [ "$CONFIRM" = "Y" ]; then
         echo "Доступные версии пакета $PACKAGE_NAME:"
         echo "$VERSIONS"
         echo ""
-        echo "Введите номер версии для установки или нажмите Enter для последней версии:"
+        echo "Введите номер версии для установки или нажмите Enter для установки последней версии:"
         read VERSION_CHOICE < /dev/tty
 
         # Если версия не указана, то выбираем последнюю
@@ -153,6 +153,10 @@ if [ "$CONFIRM" = "y" ] || [ "$CONFIRM" = "Y" ]; then
 else
   echo "Установка пакета пропущена."
 fi
+
+ln -sf /opt/etc/init.d/S99hydraroute /opt/bin/hr
+
+echo "Установка завершена. для управления классиком hr для управления нео neo"
 
 # Очистка — удаление скрипта
 SCRIPT="$0"

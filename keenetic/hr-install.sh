@@ -6,7 +6,7 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-# Анимация
+# Анимация с выводом в реальном времени
 run_with_animation() {
   local message="$1"
   shift
@@ -79,118 +79,61 @@ EOF"
 
   run_with_animation "Создание index.php" sh -c "cat > \"$HRNEO_DIR/index.php\" << 'EOF'
 <?php
-$currentVersion = '0.0.0.0';
-$remoteVersionUrl = 'https://raw.githubusercontent.com/pegakmop/hrneo/main/version.txt';
-$updateNotice = '';
-$message = '';
+\$currentVersion = '0.0.0.1';
+\$remoteVersionUrl = 'https://raw.githubusercontent.com/pegakmop/hrneo/main/version.txt';
+\$updateNotice = '';
+\$message = '';
 
-$context = stream_context_create(['http' => ['timeout' => 3]]);
-$remoteContent = @file_get_contents($remoteVersionUrl, false, $context);
+\$context = stream_context_create(['http' => ['timeout' => 3]]);
+\$remoteContent = @file_get_contents(\$remoteVersionUrl, false, \$context);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['run_update'])) {
-    $updateScript = 'curl -L -s "https://raw.githubusercontent.com/pegakmop/hrneo/refs/heads/main/hrneo-web.sh" > /tmp/hrneo-web.sh && sh /tmp/hrneo-web.sh';
-    shell_exec($updateScript);
-    $message = "✔ Обновление запущено. Перезагрузите страницу через пару секунд.";
+if (\$_SERVER['REQUEST_METHOD'] === 'POST' && isset(\$_POST['run_update'])) {
+    \$updateScript = 'curl -L -s \"https://raw.githubusercontent.com/pegakmop/hrneo/refs/heads/main/hrneo-web.sh\" > /tmp/hrneo-web.sh && sh /tmp/hrneo-web.sh';
+    shell_exec(\$updateScript);
+    \$message = \"✔ Обновление запущено. Перезагрузите страницу через пару секунд.\";
 }
 
-if ($remoteContent !== false) {
-    $lines = explode("\n", $remoteContent);
-    $versionInfo = [];
-    foreach ($lines as $line) {
-        $parts = explode('=', trim($line), 2);
-        if (count($parts) == 2) {
-            $versionInfo[trim($parts[0])] = trim($parts[1]);
+if (\$remoteContent !== false) {
+    \$lines = explode(\"\\n\", \$remoteContent);
+    \$versionInfo = [];
+    foreach (\$lines as \$line) {
+        \$parts = explode('=', trim(\$line), 2);
+        if (count(\$parts) == 2) {
+            \$versionInfo[trim(\$parts[0])] = trim(\$parts[1]);
         }
     }
-
-    if (!empty($versionInfo['Version']) && version_compare($versionInfo['Version'], $currentVersion, '>')) {
-        $updateNotice = '
-        <div class="update-box">
-            <h2>Доступно обновление: v' . htmlspecialchars($versionInfo['Version']) . '</h2>
-            <p>' . nl2br(htmlspecialchars($versionInfo['Show'])) . '</p>
-            <form method="post">
-                <button type="submit" name="run_update">⬇️ Обновить сейчас</button>
+    if (!empty(\$versionInfo['Version']) && version_compare(\$versionInfo['Version'], \$currentVersion, '>')) {
+        \$updateNotice = '
+        <div class=\"update-box\">
+            <h2>Доступно обновление: v' . htmlspecialchars(\$versionInfo['Version']) . '</h2>
+            <p>' . nl2br(htmlspecialchars(\$versionInfo['Show'])) . '</p>
+            <form method=\"post\">
+                <button type=\"submit\" name=\"run_update\">⬇️ Обновить сейчас</button>
             </form>
         </div>';
     } else {
-        $updateNotice = '<p class="up-to-date">✅ Установлена последняя версия: v' . $currentVersion . '</p>';
+        \$updateNotice = '<p class=\"up-to-date\">✅ Установлена последняя версия: v' . \$currentVersion . '</p>';
     }
 } else {
-    $updateNotice = '<p class="error">⚠️ Не удалось получить информацию об обновлении.</p>';
+    \$updateNotice = '<p class=\"error\">⚠️ Не удалось получить информацию об обновлении.</p>';
 }
 ?>
 <!DOCTYPE html>
-<html lang="ru">
+<html lang=\"ru\">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset=\"UTF-8\">
+<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
 <title>HRNeo Обновление</title>
 <style>
-body {
-  background: #1e1e2f;
-  color: #e0e0e0;
-  font-family: 'Segoe UI', sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  padding: 1rem;
-}
-.update-box {
-  background: #292c42;
-  padding: 2rem;
-  border-radius: 10px;
-  max-width: 500px;
-  width: 100%;
-  box-shadow: 0 0 15px rgba(0,0,0,0.5);
-  text-align: center;
-}
-.update-box h2 {
-  color: #68b0ab;
-  margin-bottom: 1rem;
-}
-.update-box p {
-  margin-bottom: 1.5rem;
-  line-height: 1.5;
-}
-button {
-  background: #68b0ab;
-  color: #1e1e2f;
-  border: none;
-  padding: 0.7rem 1.5rem;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: 5px;
-}
-button:hover {
-  background: #55958f;
-}
-.up-to-date {
-  text-align: center;
-  font-size: 1.1rem;
-  color: #8aff8a;
-}
-.error {
-  text-align: center;
-  font-size: 1.1rem;
-  color: #ff6c6c;
-}
-.message {
-  text-align: center;
-  font-weight: bold;
-  color: #ffd966;
-  margin-bottom: 1rem;
-}
+/* здесь можно далее вставить стили */
 </style>
 </head>
 <body>
-  <div class="update-box">
-    <?php if ($message): ?>
-      <div class="message"><?= htmlspecialchars($message) ?></div>
+  <div class=\"update-box\">
+    <?php if (\$message): ?>
+      <div class=\"message\"><?= htmlspecialchars(\$message) ?></div>
     <?php endif; ?>
-    <?= $updateNotice ?>
+    <?= \$updateNotice ?>
   </div>
 </body>
 </html>
@@ -209,7 +152,6 @@ EOF"
   cgi.assign = ( \".php\" => \"/opt/bin/php8-cgi\" )
   setenv.set-environment = ( \"PATH\" => \"/opt/bin:/usr/bin:/bin\" )
   index-file.names = ( \"index.php\" )
-  url.rewrite-once = ( \"^/(.*)\" => \"/hrneo/\\\$1\" )
 }
 EOF"
 
@@ -217,12 +159,16 @@ EOF"
     sh -c "/opt/etc/init.d/S80lighttpd enable && /opt/etc/init.d/S80lighttpd restart"
 }
 
-# Основной код
+# -------------------------------------------------------------------------
+
+# Основной блок
+PACKAGE_NAME=""
+
 echo "Запуск установки..."
 ndmc -c "dns-proxy tls upstream 9.9.9.9 sni dns.quad9.net" >/dev/null 2>&1
 
 run_with_animation "Обновление списка пакетов" opkg update
-run_with_animation "Установка wget с поддержкой HTTPS" opkg install wget-ssl curl
+run_with_animation "Установка wget с HTTPS" opkg install wget-ssl curl
 run_with_animation "Удаление wget без SSL" opkg remove wget-nossl
 
 echo "Определение архитектуры..."
@@ -231,29 +177,24 @@ ARCH=$(opkg print-architecture | awk '/^arch/ && $2 !~ /_kn$/ && $2 ~ /-[0-9]+\.
 
 case "$ARCH" in
   aarch64-3.10) FEED_URL="https://ground-zerro.github.io/release/keenetic/aarch64-k3.10" ;;
-  mipsel-3.4)  FEED_URL="https://ground-zerro.github.io/release/keenetic/mipselsf-k3.4" ;;
-  mips-3.4)    FEED_URL="https://ground-zerro.github.io/release/keenetic/mipssf-k3.4" ;;
+  mipsel-3.4) FEED_URL="https://ground-zerro.github.io/release/keenetic/mipselsf-k3.4" ;;
+  mips-3.4) FEED_URL="https://ground-zerro.github.io/release/keenetic/mipssf-k3.4" ;;
   *) echo "Неподдерживаемая архитектура: $ARCH"; exit 1 ;;
 esac
 
 echo "Архитектура: $ARCH"
-echo "Репозиторий: $FEED_URL"
-
+mkdir -p /opt/etc/opkg
 FEED_CONF="/opt/etc/opkg/hydraroute.conf"
 FEED_LINE="src/gz HydraRoute $FEED_URL"
-mkdir -p /opt/etc/opkg
 grep -qxF "$FEED_LINE" "$FEED_CONF" 2>/dev/null || echo "$FEED_LINE" >> "$FEED_CONF"
 
-run_with_animation "Обновление списка пакетов с новым репозиторием" opkg update
+run_with_animation "Обновление списка пакетов репозитория" opkg update
 
 echo ""
 echo "Установить/обновить пакет ('hydraroute' или 'hrneo')? (y/n):"
 read CONFIRM < /dev/tty
 
-PACKAGE_NAME=""
-
 if [ "$CONFIRM" = "y" ] || [ "$CONFIRM" = "Y" ]; then
-  echo ""
   echo "Введите имя пакета:"
   read PACKAGE_NAME < /dev/tty
   case "$PACKAGE_NAME" in
@@ -272,15 +213,10 @@ if [ "$CONFIRM" = "y" ] || [ "$CONFIRM" = "Y" ]; then
           ROUTER_IP=$(ip addr show br0 2>/dev/null | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
           echo ""
           echo "🔗 Откройте в браузере: http://${ROUTER_IP:-192.168.1.1}:88"
-        else
-          echo "WebUI пропущен."
         fi
       fi
       ;;
-    *)
-      echo "Неверное имя — пропуск."
-      PACKAGE_NAME=""
-      ;;
+    *) echo "Неверное имя — пропуск." ;;
   esac
 else
   echo "Пропуск установки пакета."
@@ -295,8 +231,7 @@ if [ "$PACKAGE_NAME" = "hydraroute" ]; then
 fi
 
 if [ "$PACKAGE_NAME" = "hrneo" ]; then
-  ln -sf /opt/etc/init.d/S99hrneo /opt/bin/hr
-  echo "Управление нео:       hr (start/restart/stop)"
+  ln -sf /opt/etc/init.d/S99hrneo /opt/bin/neo
   echo "Управление нео:       neo (start/restart/stop)"
 fi
 

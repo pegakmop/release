@@ -1,48 +1,53 @@
 #!/bin/sh
+# curl -fsSL https://pegakmop.github.io/release/keenetic/install-feed.sh | sh
 
-# Анимация ожидания выполнения команды
-animation() {
-	local pid=$1
-	local message=$2
-	local spin='-\|/'
+# Цвета
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # Сброс цвета
 
-	echo -n "$message... "
-
-	while kill -0 $pid 2>/dev/null; do
-		for i in $(seq 0 3); do
-			echo -ne "\b${spin:$i:1}"
-			usleep 100000  # 0.1 сек
-		done
-	done
-
-	wait $pid
-	if [ $? -eq 0 ]; then
-		echo -e "\b✔ Готово!"
-	else
-		echo -e "\b✖ Ошибка!"
-	fi
-}
-
-# Обёртка для запуска команды с анимацией
+# Анимация с выводом в реальном времени
 run_with_animation() {
 	local message="$1"
 	shift
-	("$@") &
-	animation $! "$message"
+	local logfile="/tmp/cmd.log.$$"
+	local spin='-\|/'
+	local i=0
+
+	echo "$message"
+
+	("$@" >"$logfile" 2>&1) &
+	local pid=$!
+
+	tail -n +1 -f "$logfile" &
+	local tailpid=$!
+
+	while kill -0 $pid 2>/dev/null; do
+		printf "\r[%c] " "${spin:$i:1}"
+		i=$(( (i + 1) % 4 ))
+		sleep 0.1
+	done
+
+	wait $pid
+	local status=$?
+	kill $tailpid 2>/dev/null
+	wait $tailpid 2>/dev/null
+	rm -f "$logfile"
+
+	if [ $status -eq 0 ]; then
+		echo -e "\r${GREEN}✔ Готово!${NC}"
+	else
+		echo -e "\r${RED}✖ Ошибка!${NC}"
+	fi
 }
 
-echo "Запуск установки репозитория..."
-logger "Запуск установки репозитория..."
-
+echo "Запуск установки..."
+ndmc -c "dns-proxy tls upstream 9.9.9.9 sni dns.quad9.net" >/dev/null 2>&1
 run_with_animation "Обновление списка пакетов" opkg update
-logger "Обновление списка пакетов"
-run_with_animation "Установка wget с поддержкой HTTPS" opkg install wget-ssl
-logger "Установка wget с поддержкой HTTPS"
+run_with_animation "Установка wget с поддержкой HTTPS" opkg install wget-ssl curl
 run_with_animation "Удаление wget без SSL" opkg remove wget-nossl
-logger "Удаление wget без SSL"
 
 echo "Определение архитектуры системы..."
-logger "Определение архитектуры системы..."
 ARCH=$(opkg print-architecture | awk '
   /^arch/ && $2 !~ /_kn$/ && $2 ~ /-[0-9]+\.[0-9]+$/ {
     print $2; exit
@@ -51,7 +56,6 @@ ARCH=$(opkg print-architecture | awk '
 
 if [ -z "$ARCH" ]; then
   echo "Не удалось определить архитектуру."
-  logger "Не удалось определить архитектуру."
   exit 1
 fi
 
@@ -67,77 +71,81 @@ case "$ARCH" in
     ;;
   *)
     echo "Неподдерживаемая архитектура: $ARCH"
-    logger "Неподдерживаемая архитектура: $ARCH"
     exit 1
     ;;
 esac
 
 echo "Архитектура: $ARCH"
-logger "Архитектура: $ARCH"
 echo "Выбранный репозиторий: $FEED_URL"
-logger "Выбранный репозиторий: $FEED_URL"
 
 FEED_CONF="/opt/etc/opkg/hydraroute.conf"
 FEED_LINE="src/gz HydraRoute $FEED_URL"
 
-# Убедимся, что директория конфигурации opkg существует
 if [ ! -d "/opt/etc/opkg" ]; then
   echo "Создание директории /opt/etc/opkg..."
-  logger "Создание директории /opt/etc/opkg..."
   mkdir -p /opt/etc/opkg
 fi
 
-# Добавляем репозиторий, если он ещё не добавлен
 if grep -q "$FEED_URL" "$FEED_CONF" 2>/dev/null; then
-  echo "Репозиторий уже добавлен в $FEED_CONF. Пропускаем."
-  logger "Репозиторий уже добавлен в $FEED_CONF. Пропускаем."
+  echo "Репозиторий уже добавлен в $FEED_CONF..."
 else
   echo "Добавление репозитория в $FEED_CONF..."
-  logger "Добавление репозитория в $FEED_CONF..."
   echo "$FEED_LINE" >> "$FEED_CONF"
-  logger "$FEED_LINE" >> "$FEED_CONF"
 fi
 
 run_with_animation "Обновление списка пакетов с новым репозиторием" opkg update
-logger "Обновление списка пакетов с новым репозиторием"
 
-# Подтверждение от пользователя
 echo ""
-echo "Установить один из пакетов из репозитория? (y/n):"
-logger "Установить один из пакетов из репозитория? (y/n):"
+echo "Установить или обновить один из пакетов ('hydraroute' или 'hrneo')? (y/n):"
 read CONFIRM < /dev/tty
 
 if [ "$CONFIRM" = "y" ] || [ "$CONFIRM" = "Y" ]; then
   echo ""
-  echo "Доступные пакеты в репозитории:"
-  opkg list | grep -E 'hydraroute|hrneo' || echo "Подходящих пакетов не найдено."
-
-  echo ""
-  echo "Введите имя пакета для установки ('hydraroute' или 'hrneo'):"
+  echo "Введите имя пакета для установки/обновления:"
   read PACKAGE_NAME < /dev/tty
-  
 
   case "$PACKAGE_NAME" in
     hydraroute|hrneo)
-      run_with_animation "Установка пакета: $PACKAGE_NAME" opkg install "$PACKAGE_NAME"
-      logger "Устанавливаем пакет: $PACKAGE_NAME"
+      if opkg status "$PACKAGE_NAME" >/dev/null 2>&1; then
+        run_with_animation "Обновление пакета $PACKAGE_NAME" opkg upgrade "$PACKAGE_NAME"
+      else
+        run_with_animation "Установка пакета $PACKAGE_NAME" opkg install "$PACKAGE_NAME"
+      fi
+
+      if [ "$PACKAGE_NAME" = "hrneo" ]; then
+        echo ""
+        echo "Хотите установить веб-интерфейс для HRNeo? (y/n):"
+        read INSTALL_WEBUI < /dev/tty
+
+        if [ "$INSTALL_WEBUI" = "y" ] || [ "$INSTALL_WEBUI" = "Y" ]; then
+          echo "Установка веб-интерфейса..."
+          curl -L -s "https://raw.githubusercontent.com/pegakmop/hrneo/refs/heads/main/hrneo-web.sh" > /tmp/hrneo-web.sh
+          sh /tmp/hrneo-web.sh
+        else
+          echo "Установка интерфейса пропущена."
+        fi
+      fi
       ;;
     *)
-      echo "Неверное имя пакета. Установка пропущена."
-      logger "Неверное имя пакета. Установка пропущена."
+      echo "Неверное имя пакета или установка отменена."
       ;;
   esac
 else
-  echo "Установка пакета отменена пользователем."
-  logger "Установка пакета отменена пользователем."
+  echo "Установка пакета пропущена."
 fi
 
-# Очистка — удаление скрипта
-SCRIPT="$0"
-if [ -f "$SCRIPT" ]; then
+ln -sf /opt/etc/init.d/S99hydraroute /opt/bin/hr
+ln -sf /opt/etc/init.d/S99hrneo /opt/bin/neo
+
+echo ""
+echo -e "${GREEN}Установка завершена.${NC}"
+echo "Для управления классиком - hr (start/restart/stop)"
+echo "Для управления нео      - neo (start/restart/stop)"
+echo "Больше полезностей в боте @HydraRouteBot"
+
+if [ -f "$0" ]; then
   echo "- Удаление установочного скрипта..."
-  rm "$SCRIPT"
+  rm -- "$0" 2>/dev/null
 fi
 
-echo "Установка завершена."
-logger "Установка завершена"
+echo -e "${GREEN}Готово.${NC}"

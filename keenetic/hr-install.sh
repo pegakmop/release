@@ -8,7 +8,7 @@ animation() {
     while kill -0 $pid 2>/dev/null; do
         i=$(( (i+1) %4 ))
         printf "\r[%s] %s..." "${spin:$i:1}" "$message"
-        sleep 0.1
+        usleep 100000
     done
     wait $pid
     if [ $? -eq 0 ]; then

@@ -4,7 +4,7 @@
 # Цвета
 GREEN='\033[0;32m'
 RED='\033[0;31m'
-NC='\033[0m' # Сброс цвета
+NC='\033[0m'
 
 # Анимация с выводом в реальном времени
 run_with_animation() {
@@ -25,7 +25,7 @@ run_with_animation() {
 	while kill -0 $pid 2>/dev/null; do
 		printf "\r[%c] " "${spin:$i:1}"
 		i=$(( (i + 1) % 4 ))
-		sleep 0.1
+		usleep 100000
 	done
 
 	wait $pid
@@ -121,6 +121,11 @@ if [ "$CONFIRM" = "y" ] || [ "$CONFIRM" = "Y" ]; then
           echo "Установка веб-интерфейса..."
           curl -L -s "https://raw.githubusercontent.com/pegakmop/hrneo/refs/heads/main/hrneo-web.sh" > /tmp/hrneo-web.sh
           sh /tmp/hrneo-web.sh
+
+          # Вывод IP роутера
+          ROUTER_IP=$(ip addr show br0 2>/dev/null | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
+          echo ""
+          echo "🔗 Откройте в браузере: http://${ROUTER_IP:-192.168.1.1}:88"
         else
           echo "Установка интерфейса пропущена."
         fi

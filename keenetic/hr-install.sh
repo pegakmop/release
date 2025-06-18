@@ -59,7 +59,7 @@ else
   echo "Репозиторий уже добавлен в $FEED_CONF..."
 fi
 
-run_with_animation "Обновление списка пакетов с новым репозиторием" opkg update
+run_with_animation "Обновление списка пакетов..." opkg update
 
 # === Выбор пакета пользователем ===
 echo ""

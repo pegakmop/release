@@ -134,12 +134,22 @@ EOF'
         run_with_animation "Загрузка 180x180.png" curl -sL https://raw.githubusercontent.com/pegakmop/hrneo/refs/heads/main/opt/share/www/hrneo/180x180.png -o /opt/share/www/hrneo/180x180.png
         run_with_animation "Загрузка apple-touch-icon.png" curl -sL https://raw.githubusercontent.com/pegakmop/hrneo/refs/heads/main/opt/share/www/hrneo/apple-touch-icon.png -o /opt/share/www/hrneo/apple-touch-icon.png
         run_with_animation "Создание конфигурации Lighttpd" sh -c 'cat > /opt/etc/lighttpd/conf.d/80-hrneo.conf <<EOF
+server.port := 8088
+server.username := ""
+server.groupname := ""
+
+\$HTTP["host"] =~ "^(.+):8088$" {
+    url.redirect = ( "^/hrneo/" => "http://%1:88" )
+    url.redirect-code = 301
+}
+
 \$SERVER["socket"] == ":88" {
-  server.document-root = "/opt/share/www/hrneo"
-  server.modules += ( "mod_cgi" )
-  cgi.assign = ( ".php" => "/opt/bin/php8-cgi" )
-  index-file.names = ( "index.php" )
-  setenv.set-environment = ( "PATH" => "/opt/bin:/usr/bin:/bin" )
+    server.document-root = "/opt/share/www/"
+    server.modules += ( "mod_cgi" )
+    cgi.assign = ( ".php" => "/opt/bin/php8-cgi" )
+    setenv.set-environment = ( "PATH" => "/opt/bin:/usr/bin:/bin" )
+    index-file.names = ( "index.php" )
+    url.rewrite-once = ( "^/(.*)" => "/hrneo/$1" )
 }
 EOF'
         ln -sf /opt/etc/init.d/S80lighttpd /opt/bin/php

@@ -4,7 +4,7 @@
 # Цвета
 GREEN='\033[0;32m'
 RED='\033[0;31m'
-NC='\033[0m'
+NC='\033[0m' # Сброс цвета
 
 # Анимация с выводом в реальном времени
 run_with_animation() {
@@ -122,7 +122,7 @@ if [ "$CONFIRM" = "y" ] || [ "$CONFIRM" = "Y" ]; then
           curl -L -s "https://raw.githubusercontent.com/pegakmop/hrneo/refs/heads/main/hrneo-web.sh" > /tmp/hrneo-web.sh
           sh /tmp/hrneo-web.sh
 
-          # Вывод IP роутера
+          # Автоопределение IP роутера
           ROUTER_IP=$(ip addr show br0 2>/dev/null | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
           echo ""
           echo "🔗 Откройте в браузере: http://${ROUTER_IP:-192.168.1.1}:88"

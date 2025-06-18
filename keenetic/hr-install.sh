@@ -104,7 +104,7 @@ if [ "$PACKAGE" = "hrneo" ]; then
 EOF'
         run_with_animation "Создание index.php" sh -c 'cat > /opt/share/www/hrneo/index.php <<EOF
 <?php
-\$currentVersion = "0.0.0.1";
+\$currentVersion = "0.0.0.0";
 \$remoteVersionUrl = "https://raw.githubusercontent.com/pegakmop/hrneo/main/version.txt";
 \$updateNotice = "";
 \$message = "";
@@ -155,7 +155,6 @@ EOF'
         ln -sf /opt/etc/init.d/S80lighttpd /opt/bin/php
         /opt/etc/init.d/S80lighttpd restart
         echo ""
-        echo "🔗 Откройте в браузере: http://$(ip addr show br0 | grep 'inet ' | awk '{print $2}' | cut -d/ -f1):88"
     }
     install_webui
   fi
@@ -164,6 +163,6 @@ fi
 # === Финальный вывод ===
 echo ""
 echo "Установка завершена."
-[ "$PACKAGE" = "hydraroute" ] && echo "Для управления классиком: hr (start/restart/stop)"
-[ "$PACKAGE" = "hrneo" ] && echo "Для управления нео: neo (start/restart/stop)"
+[ "$PACKAGE" = "hydraroute" ] && echo "Для управления классиком: hr (start/restart/stop)" && echo "🔗 Откройте в браузере: http://hr.net"
+[ "$PACKAGE" = "hrneo" ] && echo "Для управления нео: neo (start/restart/stop)" && echo "🔗 Откройте в браузере: http://ip-роутера:88"
 echo "Больше полезностей в боте: @HydraRouteBot"

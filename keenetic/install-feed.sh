@@ -24,8 +24,8 @@ run_with_animation() {
     ("$@") >/dev/null 2>&1 &
     animation $! "$msg"
 }
-
-echo "Запуск установки..."
+ip_address_router=$(ip addr show br0 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1 | head -n1)
+echo "Запуск установки мода от @pegakmop..."
 
 ndmc -c "dns-proxy tls upstream 9.9.9.9 sni dns.quad9.net" >/dev/null 2>&1
 
@@ -63,13 +63,13 @@ run_with_animation "Обновление списка пакетов..." opkg up
 
 # === Выбор пакета пользователем ===
 echo ""
-echo "Установить/обновить пакет ('hydraroute' или 'hrneo')? (y/n):"
+echo "Установить/обновить пакет гидры (y/n):"
 read -r CONFIRM < /dev/tty
 if [ "$CONFIRM" != "y" ] && [ "$CONFIRM" != "Y" ]; then
     echo "Пропущено."; exit 0
 fi
 
-echo "Введите имя пакета:"
+echo "Введите имя пакета ('hydraroute' или 'hrneo'):"
 read -r PACKAGE < /dev/tty
 if [ "$PACKAGE" != "hydraroute" ] && [ "$PACKAGE" != "hrneo" ]; then
     echo "Неверное имя пакета. Допустимо: hydraroute или hrneo."; exit 1
@@ -152,7 +152,7 @@ server.groupname := ""
     url.rewrite-once = ( "^/(.*)" => "/hrneo/$1" )
 }
 EOF'
-        ln -sf /opt/etc/init.d/S80lighttpd /opt/bin/php
+        ln -sf /opt/etc/init.d/S80lighttpd /opt/bin/lh
         /opt/etc/init.d/S80lighttpd restart
         echo ""
     }
@@ -164,5 +164,5 @@ fi
 echo ""
 echo "Установка завершена."
 [ "$PACKAGE" = "hydraroute" ] && echo "Для управления классиком: hr (start/restart/stop)" && echo "🔗 Откройте в браузере: http://hr.net"
-[ "$PACKAGE" = "hrneo" ] && echo "Для управления нео: neo (start/restart/stop)" && echo "🔗 Откройте в браузере: http://ip-роутера:88"
+[ "$PACKAGE" = "hrneo" ] && echo "Для управления нео: neo (start/restart/stop)" && echo "🔗 Откройте в браузере: http://$ip_address_router:88"
 echo "Больше полезностей в боте: @entwarebot"

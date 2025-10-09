@@ -2,12 +2,13 @@
 
 echo "Updating package list..."
 opkg update
-
+rm -rf /opt/etc/opkg/customfeeds.conf
+rm -rf /opt/var/opkg-list/ground-zerro
 echo "Installing wget with HTTPS support..."
 opkg install curl wget-ssl
 opkg remove wget-nossl
 
-echo "Detecting system architecture (via opkg)..."
+echo "Detecting system architecture (keenetic opkg)..."
 ARCH=$(opkg print-architecture | awk '
   /^arch/ && $2 !~ /_kn$/ && $2 ~ /-[0-9]+\.[0-9]+$/ {
     print $2; exit

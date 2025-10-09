@@ -2,7 +2,7 @@
 
 # Установить репозиторий на ваше устройство.
 ```
-curl -fsSL https://pegakmop.github.io/release/install-pegakmop-repository.sh | sh
+curl -Ls "https://pegakmop.github.io/release/keenetic/opkg.sh" | sh
 ```
 
 # Установить neofit на xray или sing-box-go версии:

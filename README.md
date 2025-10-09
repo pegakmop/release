@@ -7,12 +7,22 @@ curl -Ls "https://pegakmop.github.io/release/keenetic/opkg.sh" | sh
 
 # Установить neofit на xray или sing-box-go версии:
 
-neofitsb
+neofitsb install
 ```
 opkg install neofitsb
 ```
 
-neofitxray
+neofitxray install
 ```
 opkg install neofitxray
+```
+
+neofitsb remove
+```
+opkg remove neofitsb
+```
+
+neofitxray remove
+```
+opkg remove neofitxray
 ```

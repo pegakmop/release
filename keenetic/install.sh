@@ -71,8 +71,8 @@ fi
 
 echo "Введите имя пакета:"
 read -r PACKAGE < /dev/tty
-if [ "$PACKAGE" != "hydraroute" ] && [ "$PACKAGE" != "hrneo" ]; then
-    echo "Неверное имя пакета. Допустимо: hydraroute или hrneo."; exit 1
+if  [ "$PACKAGE" != "neofitxray" ] && [ "$PACKAGE" != "neofitsb" ] && [ "$PACKAGE" != "sing-box-go" ] && [ "$PACKAGE" != "hydraroute" ] && [ "$PACKAGE" != "hrneo" ]; then
+    echo "Неверное имя пакета. Пример установки командой: opkg install neofitxray. Доступные пакеты: neofitxray, neofitsb, sing-box-go, hydraroute или hrneo."; exit 1
 fi
 
 run_with_animation "Установка/обновление $PACKAGE" sh -c "opkg install \"$PACKAGE\" >/dev/null 2>&1 || opkg upgrade \"$PACKAGE\" >/dev/null 2>&1"
@@ -163,6 +163,8 @@ fi
 # === Финальный вывод ===
 echo ""
 echo "Установка завершена."
+[ "$PACKAGE" = "neofitxray" ] && echo "Для управления neofitxray: nfxray (start/restart/stop)" && echo "🔗 Откройте в браузере: http://ip-роутера:96"
+[ "$PACKAGE" = "neofitsb" ] && echo "Для управления neofitsb: nfsb (start/restart/stop)" && echo "🔗 Откройте в браузере: http://ip-роутера:94"
 [ "$PACKAGE" = "hydraroute" ] && echo "Для управления классиком: hr (start/restart/stop)" && echo "🔗 Откройте в браузере: http://hr.net"
 [ "$PACKAGE" = "hrneo" ] && echo "Для управления нео: neo (start/restart/stop)" && echo "🔗 Откройте в браузере: http://ip-роутера:88"
 echo "Больше полезностей в боте: @entwarebot"

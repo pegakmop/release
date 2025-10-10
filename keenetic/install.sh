@@ -152,7 +152,7 @@ server.groupname := ""
     url.rewrite-once = ( "^/(.*)" => "/hrneo/$1" )
 }
 EOF'
-        ln -sf /opt/etc/init.d/S80lighttpd /opt/bin/php
+        ln -sf /opt/etc/init.d/S80lighttpd /opt/bin/s80lighttpd
         /opt/etc/init.d/S80lighttpd restart
         echo ""
     }

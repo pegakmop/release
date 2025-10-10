@@ -39,17 +39,17 @@ ARCH=$(opkg print-architecture | awk '/^arch/ && $2 !~ /_kn$/ && $2 ~ /-[0-9]+\.
 if [ -z "$ARCH" ]; then echo "Не удалось определить архитектуру."; exit 1; fi
 
 case "$ARCH" in
-  aarch64-3.10) FEED_URL="https://ground-zerro.github.io/release/keenetic/aarch64-k3.10" ;;
-  mipsel-3.4)   FEED_URL="https://ground-zerro.github.io/release/keenetic/mipselsf-k3.4" ;;
-  mips-3.4)     FEED_URL="https://ground-zerro.github.io/release/keenetic/mipssf-k3.4" ;;
+  aarch64-3.10) FEED_URL="https://pegakmop.github.io/release/keenetic/aarch64-k3.10" ;;
+  mipsel-3.4)   FEED_URL="https://pegakmop.github.io/release/keenetic/mipselsf-k3.4" ;;
+  mips-3.4)     FEED_URL="https://pegakmop.github.io/release/keenetic/mipssf-k3.4" ;;
   *) echo "Неподдерживаемая архитектура: $ARCH"; exit 1 ;;
 esac
 
 echo "Архитектура: $ARCH"
 echo "Выбранный репозиторий: $FEED_URL"
 
-FEED_CONF="/opt/etc/opkg/hydraroute.conf"
-FEED_LINE="src/gz HydraRoute $FEED_URL"
+FEED_CONF="/opt/etc/opkg/neofit.conf"
+FEED_LINE="src/gz pegakmop $FEED_URL"
 
 [ ! -d "/opt/etc/opkg" ] && mkdir -p /opt/etc/opkg
 

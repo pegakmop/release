@@ -2,8 +2,6 @@
 
 echo "Updating package list..."
 opkg update
-rm -rf /opt/etc/opkg/customfeeds.conf
-rm -rf /opt/var/opkg-list/ground-zerro
 echo "Installing wget with HTTPS support..."
 opkg install curl wget-ssl
 opkg remove wget-nossl

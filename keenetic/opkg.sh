@@ -1,5 +1,5 @@
 #!/bin/sh
-
+rm -rf /opt/etc/opkg/customfeeds.conf
 echo "Updating package list..."
 opkg update
 echo "Installing wget with HTTPS support..."

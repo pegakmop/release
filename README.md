@@ -4,3 +4,11 @@
 ```
 curl -Ls "https://pegakmop.github.io/release/keenetic/opkg.sh" | sh
 ```
+# Удалить репозиторий
+```
+rm -rf /opt/etc/opkg/neofit.conf
+```
+# Неудачно обновились списки?
+```
+rm -rf /opt/var/opkg-list/pegakmop && opkg update
+``` 

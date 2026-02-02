@@ -10,5 +10,5 @@ rm -rf /opt/etc/opkg/neofit.conf
 ```
 # Неудачно обновились списки?
 ```
-rm -rf /opt/var/opkg-list/pegakmop && opkg update
+rm -rf /opt/var/opkg-lists/pegakmop && opkg update
 ``` 

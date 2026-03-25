@@ -1,6 +1,7 @@
 #!/bin/sh
 rm -rf /opt/etc/opkg/customfeeds.conf
 rm -rf /opt/etc/opkg/neofit.conf
+rm -rf /opt/etc/opkg/pegakmop.conf
 rm -rf /opt/var/opkg-lists/pegakmop
 rm -rf /opt/var/opkg-lists/ground-zerro
 echo "Обновление списка пакетов..."

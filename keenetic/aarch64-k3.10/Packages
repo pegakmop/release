@@ -1,0 +1,175 @@
+Package: 3x-ui
+Version: 2.8.10-2
+Depends: xray-core
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 0
+Filename: 3x-ui_2.8.10-2_aarch64-3.10.ipk
+Size: 19099902
+Maintainer: MHSanaei
+Description: Xray panel supporting multi-protocol multi-user expire day & traffic & IP limit (Vmess, Vless, Trojan, ShadowSocks, Wireguard, Tunnel, Mixed, HTTP)
+
+Package: adguardhome-go-ipset
+Version: 0.107.70
+Depends: libc, libssp, librt, libpthread, ca-bundle
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 0
+Filename: adguardhome-go-ipset_0.107.70_aarch64-3.10.ipk
+Size: 10634533
+Maintainer: Ground_Zerro, AdguardTeam
+Description: AdGuard Home fork with ipset settings in frontend.
+
+Package: hrneo
+Version: 2.4.0-1
+Depends: libc, ipset, iptables
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 286036
+Filename: hrneo_2.4.0-1_aarch64-3.10.ipk
+Size: 279314
+Maintainer: Ground_Zerro
+Description: DNS-based policy routing daemon for Keenetic
+
+Package: hrweb
+Version: 1.24.0-1
+Depends: libc
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 3133264
+Filename: hrweb_1.24.0-1_aarch64-3.10.ipk
+Size: 3046326
+Maintainer: Ground_Zerro
+Description: WebUI for HydraRoute Neo
+
+Package: hydraroute
+Version: 1.1.0-final
+Depends: ipset, iptables, adguardhome-go
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 0
+Filename: hydraroute_1.1.0-final_aarch64-3.10.ipk
+Size: 2894847
+Maintainer: Ground_Zerro
+Description: HydraRoute Classic - domain routing for Keenetic based on ipset and AGH integration + WebUI control panel
+
+Package: keenetic-vpn
+Version: 1.0.1
+Depends: busybox
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 0
+Filename: keenetic-vpn_1.0.1_aarch64-3.10.ipk
+Size: 1834057
+Maintainer: anonymous
+Description: Keenetic VPN Manager — управление VPN-политиками устройств через веб-интерфейс.
+
+Package: neofit
+Version: 1.1.1-5.4
+Depends: busybox
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 0
+Filename: neofit_1.1.1-5.4_aarch64-3.10.ipk
+Size: 2139432
+Maintainer: pegakmop
+Description: Automates configuration neofit of sing-box-go and xray: importing profiles via a link, compiling JSON configuration, creating system interfaces.
+
+Package: neofitfull
+Version: 1.1.1-1
+Depends: xray, sing-box-go
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 0
+Filename: neofitfull_1.1.1-1_aarch64-3.10.ipk
+Size: 1550066
+Maintainer: pegakmop
+Description: Automates configuration of xRay and Sing Box: importing profiles via a link, compiling JSON configuration, creating system interfaces.
+
+Package: neofitsb
+Version: 1.1.1-2
+Depends: sing-box-go
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 0
+Filename: neofitsb_1.1.1-2_aarch64-3.10.ipk
+Size: 2097208
+Maintainer: pegakmop
+Description: Automates configuration of sing-box-go: importing profiles via a link, compiling JSON configuration, creating system interfaces.
+
+Package: neofitxray
+Version: 1.1.1-2
+Depends: xray
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 0
+Filename: neofitxray_1.1.1-2_aarch64-3.10.ipk
+Size: 2099929
+Maintainer: pegakmop
+Description: Automates configuration of xRay: importing profiles via a link, compiling JSON configuration, creating system interfaces.
+
+Package: neoweb
+Version: 1.1.1.4
+Depends: libc
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 2755839
+Filename: neoweb_1.1.1.4_aarch64-3.10.ipk
+Size: 2678433
+Maintainer: pegakmop
+Description: WebUI for NeoWeb mod packet hrweb
+
+Package: nfqws-web
+Version: 3.0.23
+Depends: busybox
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 0
+Filename: nfqws-web_3.0.23_aarch64-3.10.ipk
+Size: 2709127
+Maintainer: root
+Description: Go rewrite of nfqws-keenetic-web (index.php + lighttpd/php-cgi) - single static binary, no PHP dependency, created project by author @pegakmop
+
+Package: nfqws2-keenetic
+Version: 1.2.3
+Depends: iptables, busybox
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 0
+Filename: nfqws2-keenetic_1.2.3_aarch64-3.10.ipk
+Size: 379754
+Maintainer: unknown
+Description: NFQWS2 service
+
+Package: sing-box-go
+Version: 1.13.8-2
+Depends: ca-bundle
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 0
+Filename: sing-box-go_1.13.8-2_aarch64-3.10.ipk
+Size: 22446674
+Maintainer: @pegakmop
+Description: sing-box with naive/cronet support (with init script)
+
+Package: tg-ws-proxy
+Version: 0.9.1-1
+Depends: ca-certificates
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 0
+Filename: tg-ws-proxy_0.9.1-1_entware_aarch64-3.10.ipk
+Size: 1798696
+Maintainer: tg-ws-proxy maintainers
+Description: Telegram MTProto WS bridge proxy (Go binary)
+
+Package: xray-amnezia
+Version: 26.2.6
+Depends: busybox
+Section: net
+Architecture: aarch64-3.10
+Installed-Size: 0
+Filename: xray-amnezia_26.2.6_aarch64-3.10.ipk
+Size: 7819021
+Maintainer: pegakmop
+Description: Xray core with AmneziaVPN patches. Supports VLESS, VMESS, Trojan, Shadowsocks with traffic obfuscation.

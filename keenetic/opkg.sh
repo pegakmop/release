@@ -24,13 +24,13 @@ fi
 
 case "$ARCH" in
   aarch64-3.10)
-    FEED_URL="https://www.pegakmop.site/release/keenetic/aarch64-k3.10"
+    FEED_URL="https://pegakmop.github.io/release/keenetic/aarch64-k3.10"
     ;;
   mipsel-3.4)
-    FEED_URL="https://www.pegakmop.site/release/keenetic/mipselsf-k3.4"
+    FEED_URL="https://pegakmop.github.io/release/keenetic/mipselsf-k3.4"
     ;;
   mips-3.4)
-    FEED_URL="https://www.pegakmop.site/release/keenetic/mipssf-k3.4"
+    FEED_URL="https://pegakmop.github.io/release/keenetic/mipssf-k3.4"
     ;;
   *)
     echo "Не поддерживаемая архитектура: $ARCH"
@@ -42,7 +42,7 @@ echo "Определена архитектура: $ARCH"
 echo "Устанавливаю репозиторий: $FEED_URL"
 
 FEED_CONF="/opt/etc/opkg/neofit.conf"
-FEED_LINE="src/gz pegakmop $FEED_URL"
+FEED_LINE="src/gz neofit $FEED_URL"
 
 # Ensure the opkg directory exists
 if [ ! -d "/opt/etc/opkg" ]; then

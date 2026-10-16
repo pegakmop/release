@@ -286,9 +286,9 @@
 
         <div class="grid fade-up">
           <div class="info">
-            <div>Browse: <a href="http://www.pegakmop.site/release/keenetic/">Index of /keenetic/</a></div>
+            <div>Browse: <a href="/release/keenetic/">Index of /keenetic/</a></div>
             <div>Credits: <a href="https://t.me/pegakmop">@pegakmop</a></div>
-            <div><small> terminal: <code>opkg install curl</code></small></div>
+            <div><small> terminal: <code>opkg install curl wget-ssl ca-certificates</code></small></div>
           </div>
 
           <div>
@@ -296,7 +296,7 @@
               <p style="margin:0;color:var(--muted)">Install repository on Keenetic:</p>
               <div id="copyStatus" class="sr" role="status" aria-live="polite"></div>
             </div>
-            <pre><code id="cmd2">curl -fsSL http://www.pegakmop.site/release/keenetic/opkg.sh | sh</code></pre>
+            <pre><code id="cmd2">ARCH=$(grep '^arch=' /opt/etc/entware_release | cut -d= -f2) && case "$ARCH" in aarch64) URL="aarch64-k3.10";; mipsel) URL="mipselsf-k3.4";; mips) URL="mipssf-k3.4";; esac && mkdir -p /opt/etc/opkg && echo "src/gz neofit http://pegakmop.github.io/release/keenetic/$URL" > /opt/etc/opkg/neofit.conf && opkg update || true;</code></pre>
             <div class="row">
               <button class="btn" id="copyBtn" aria-label="Copy command">
                 <span>Copy Command</span>

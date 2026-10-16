@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Packages in /keenetic/aarch64-k3.10</title>
+<style>
+:root{
+  --bg:#0b0f14; --fg:#e6edf3; --muted:#9aa4ae;
+  --stroke:rgba(255,255,255,.12);
+  --neon:#00d5ff; --neon-2:#6effa2; --violet:#a493ff;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  font-family: ui-sans-serif, system-ui, -apple-system, "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+  background:var(--bg); color:var(--fg);
+  display:flex; justify-content:center; padding:24px 14px 40px;
+  overflow-x:hidden;
+}
+.aurora{
+  position:fixed; inset:0; z-index:-2; overflow:hidden;
+  background:
+    radial-gradient(1200px 600px at 10% 10%, rgba(0,213,255,.20), transparent 60%),
+    radial-gradient(1000px 600px at 85% 20%, rgba(110,255,162,.18), transparent 60%),
+    radial-gradient(900px 500px at 50% 90%, rgba(164,147,255,.16), transparent 60%),
+    linear-gradient(180deg,#06080b,#0b0f14 55%,#0b0f14);
+}
+.aurora::before{
+  content:""; position:absolute; inset:-20%;
+  background:
+    conic-gradient(from 0deg at 30% 30%, rgba(0,213,255,.18), transparent 40%),
+    conic-gradient(from 180deg at 70% 60%, rgba(110,255,162,.16), transparent 50%);
+  filter:blur(70px); mix-blend-mode:screen;
+  animation:drift 18s linear infinite alternate;
+}
+@keyframes drift{to{transform:translate3d(6%,-4%,0) rotate(10deg)}}
+.wrap{width:min(900px,100%)}
+.card{
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+  border:1px solid var(--stroke); border-radius:20px;
+  box-shadow:var(--shadow); backdrop-filter:blur(14px) saturate(1.1);
+  overflow:hidden; animation:enter .6s ease both;
+}
+@keyframes enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.content{padding:clamp(18px,4vw,36px)}
+h1{
+  margin:0 0 6px; font-weight:800; font-size:clamp(22px,5vw,34px); line-height:1.1;
+  background:linear-gradient(90deg,var(--neon),var(--neon-2) 55%,#c2b6ff);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  word-break:break-all;
+}
+.crumbs{font-size:14px;color:var(--muted);margin-bottom:16px;word-break:break-all}
+.crumbs a{color:var(--neon);text-decoration:none}
+.crumbs a:hover{text-decoration:underline}
+.search{
+  width:100%; margin:4px 0 14px; padding:12px 14px; font-size:16px;
+  color:var(--fg); background:rgba(8,12,16,.6);
+  border:1px solid var(--stroke); border-radius:12px; outline:none;
+}
+.search:focus{border-color:var(--neon);box-shadow:0 0 0 3px rgba(0,213,255,.15)}
+.list{display:flex;flex-direction:column;gap:6px}
+.item{
+  display:flex; align-items:center; gap:12px; padding:11px 14px;
+  border:1px solid transparent; border-radius:12px;
+  background:rgba(255,255,255,.03);
+  color:var(--fg); text-decoration:none;
+  transition:background .15s,border-color .15s,transform .12s;
+}
+.item:hover{background:rgba(0,213,255,.08);border-color:rgba(0,213,255,.35);transform:translateX(2px)}
+.item .ico{flex:0 0 auto;font-size:18px}
+.item .name{
+  flex:1; min-width:0; word-break:break-all;
+  font:600 14px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color:#b6f7ff;
+}
+.item.dir .name{color:var(--neon-2)}
+.item .size{flex:0 0 auto;font-size:12px;color:var(--muted);white-space:nowrap}
+.empty{display:none;color:var(--muted);padding:12px 4px}
+.tablewrap{overflow-x:auto;border:1px solid var(--stroke);border-radius:14px}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--stroke);vertical-align:top}
+th{color:var(--muted);font-weight:600;background:rgba(255,255,255,.04);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td a{color:var(--neon);text-decoration:none;font-weight:700}
+td a:hover{text-decoration:underline}
+td.ver{font-family:ui-monospace,Menlo,monospace;color:var(--neon-2);white-space:nowrap}
+td.desc{color:var(--muted)}
+footer{
+  padding:14px 22px; color:var(--muted); font-size:13px;
+  border-top:1px solid var(--stroke);
+  display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+}
+footer a{color:var(--neon);text-decoration:none}
+@media (prefers-reduced-motion:reduce){.aurora::before,.card{animation:none}}
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<div class="wrap">
+  <section class="card">
+    <div class="content">
+      <h1>📦 Packages</h1>
+      <div class="crumbs"><a href="https://pegakmop.github.io/release/">release</a> / <a href="https://pegakmop.github.io/release/keenetic/">keenetic</a> / <a href="https://pegakmop.github.io/release/keenetic/aarch64-k3.10/">aarch64-k3.10</a> · <a href="./">index</a></div>
+      
+<input id="q" class="search" type="search" placeholder="🔍 Search packages…" autocomplete="off">
+<div class="tablewrap"><table>
+<thead><tr><th>Name</th><th>Version</th><th>Section</th><th>Description</th></tr></thead>
+<tbody><tr data-s="3x-ui xray panel supporting multi-protocol multi-user expire day &amp; traffic &amp; ip limit (vmess, vless, trojan, shadowsocks, wireguard, tunnel, mixed, http)"><td><a href="3x-ui_2.8.10-2_aarch64-3.10.ipk">3x-ui</a></td><td class="ver">2.8.10-2</td><td>net</td><td class="desc">Xray panel supporting multi-protocol multi-user expire day &amp; traffic &amp; IP limit (Vmess, Vless, Trojan, ShadowSocks, Wireguard, Tunnel, Mixed, HTTP)</td></tr>
+<tr data-s="adguardhome-go-ipset adguard home fork with ipset settings in frontend."><td><a href="adguardhome-go-ipset_0.107.70_aarch64-3.10.ipk">adguardhome-go-ipset</a></td><td class="ver">0.107.70</td><td>net</td><td class="desc">AdGuard Home fork with ipset settings in frontend.</td></tr>
+<tr data-s="ca-certificates system ca certificates"><td><a href="ca-certificates_20250419-2_all.ipk">ca-certificates</a></td><td class="ver">20250419-2</td><td>base</td><td class="desc">System CA certificates</td></tr>
+<tr data-s="curl a client-side url transfer utility"><td><a href="curl_8.15.0-2_aarch64-3.10.ipk">curl</a></td><td class="ver">8.15.0-2</td><td>net</td><td class="desc">A client-side URL transfer utility</td></tr>
+<tr data-s="hrdns dns resolver of the hydraroute dns service with built-in query statistics"><td><a href="hrdns_1.2.3-1_aarch64-3.10.ipk">hrdns</a></td><td class="ver">1.2.3-1</td><td>net</td><td class="desc">DNS resolver of the HydraRoute DNS service with built-in query statistics</td></tr>
+<tr data-s="hrneo dns-based policy routing daemon for keenetic"><td><a href="hrneo_3.24.0-1_aarch64-3.10.ipk">hrneo</a></td><td class="ver">3.24.0-1</td><td>net</td><td class="desc">DNS-based policy routing daemon for Keenetic</td></tr>
+<tr data-s="hrweb webui for hydraroute neo"><td><a href="hrweb_1.65.12-1_aarch64-3.10.ipk">hrweb</a></td><td class="ver">1.65.12-1</td><td>net</td><td class="desc">WebUI for HydraRoute Neo</td></tr>
+<tr data-s="hydraroute hydraroute classic - domain routing for keenetic based on ipset and agh integration + webui control panel"><td><a href="hydraroute_1.1.0-final_aarch64-3.10.ipk">hydraroute</a></td><td class="ver">1.1.0-final</td><td>net</td><td class="desc">HydraRoute Classic - domain routing for Keenetic based on ipset and AGH integration + WebUI control panel</td></tr>
+<tr data-s="keenetic-vpn keenetic vpn manager — управление vpn-политиками устройств через веб-интерфейс."><td><a href="keenetic-vpn_1.0.1_aarch64-3.10.ipk">keenetic-vpn</a></td><td class="ver">1.0.1</td><td>net</td><td class="desc">Keenetic VPN Manager — управление VPN-политиками устройств через веб-интерфейс.</td></tr>
+<tr data-s="neofit automates configuration neofit of sing-box-go and xray: importing profiles via a link, compiling json configuration, creating system interfaces."><td><a href="neofit_1.1.1-5.4_aarch64-3.10.ipk">neofit</a></td><td class="ver">1.1.1-5.4</td><td>net</td><td class="desc">Automates configuration neofit of sing-box-go and xray: importing profiles via a link, compiling JSON configuration, creating system interfaces.</td></tr>
+<tr data-s="neofitfull automates configuration of xray and sing box: importing profiles via a link, compiling json configuration, creating system interfaces."><td><a href="neofitfull_1.1.1-1_aarch64-3.10.ipk">neofitfull</a></td><td class="ver">1.1.1-1</td><td>net</td><td class="desc">Automates configuration of xRay and Sing Box: importing profiles via a link, compiling JSON configuration, creating system interfaces.</td></tr>
+<tr data-s="neofitsb automates configuration of sing-box-go: importing profiles via a link, compiling json configuration, creating system interfaces."><td><a href="neofitsb_1.1.1-2_aarch64-3.10.ipk">neofitsb</a></td><td class="ver">1.1.1-2</td><td>net</td><td class="desc">Automates configuration of sing-box-go: importing profiles via a link, compiling JSON configuration, creating system interfaces.</td></tr>
+<tr data-s="neofitxray automates configuration of xray: importing profiles via a link, compiling json configuration, creating system interfaces."><td><a href="neofitxray_1.1.1-2_aarch64-3.10.ipk">neofitxray</a></td><td class="ver">1.1.1-2</td><td>net</td><td class="desc">Automates configuration of xRay: importing profiles via a link, compiling JSON configuration, creating system interfaces.</td></tr>
+<tr data-s="neoweb webui for neoweb mod packet hrweb"><td><a href="neoweb_1.1.1.4_aarch64-3.10.ipk">neoweb</a></td><td class="ver">1.1.1.4</td><td>net</td><td class="desc">WebUI for NeoWeb mod packet hrweb</td></tr>
+<tr data-s="nfqws-web go rewrite of nfqws-keenetic-web (index.php + lighttpd/php-cgi) - single static binary, no php dependency, created project by author @pegakmop"><td><a href="nfqws-web_3.0.23_aarch64-3.10.ipk">nfqws-web</a></td><td class="ver">3.0.23</td><td>net</td><td class="desc">Go rewrite of nfqws-keenetic-web (index.php + lighttpd/php-cgi) - single static binary, no PHP dependency, created project by author @pegakmop</td></tr>
+<tr data-s="nfqws2-keenetic nfqws2 service"><td><a href="nfqws2-keenetic_1.2.3_aarch64-3.10.ipk">nfqws2-keenetic</a></td><td class="ver">1.2.3</td><td>net</td><td class="desc">NFQWS2 service</td></tr>
+<tr data-s="sing-box-go sing-box with naive/cronet support (with init script)"><td><a href="sing-box-go_1.13.8-2_aarch64-3.10.ipk">sing-box-go</a></td><td class="ver">1.13.8-2</td><td>net</td><td class="desc">sing-box with naive/cronet support (with init script)</td></tr>
+<tr data-s="tg-ws-proxy telegram mtproto ws bridge proxy (go binary)"><td><a href="tg-ws-proxy_0.9.1-1_entware_aarch64-3.10.ipk">tg-ws-proxy</a></td><td class="ver">0.9.1-1</td><td>net</td><td class="desc">Telegram MTProto WS bridge proxy (Go binary)</td></tr>
+<tr data-s="wget-ssl wget is a network utility to retrieve files from the web using http"><td><a href="wget-ssl_1.25.0-4_aarch64-3.10.ipk">wget-ssl</a></td><td class="ver">1.25.0-4</td><td>net</td><td class="desc">Wget is a network utility to retrieve files from the Web using http</td></tr>
+<tr data-s="xray-amnezia xray core with amneziavpn patches. supports vless, vmess, trojan, shadowsocks with traffic obfuscation."><td><a href="xray-amnezia_26.2.6_aarch64-3.10.ipk">xray-amnezia</a></td><td class="ver">26.2.6</td><td>net</td><td class="desc">Xray core with AmneziaVPN patches. Supports VLESS, VMESS, Trojan, Shadowsocks with traffic obfuscation.</td></tr>
+<tr data-s="xray-core project x originates from xtls protocol, providing a set of network tools."><td><a href="xray-core_26.7.28-1_aarch64-3.10.ipk">xray-core</a></td><td class="ver">26.7.28-1</td><td>net</td><td class="desc">Project X originates from XTLS protocol, providing a set of network tools.</td></tr>
+<tr data-s="xray project x originates from xtls protocol, providing a set of network tools."><td><a href="xray_26.7.28-1_aarch64-3.10.ipk">xray</a></td><td class="ver">26.7.28-1</td><td>net</td><td class="desc">Project X originates from XTLS protocol, providing a set of network tools.</td></tr>
+</tbody>
+</table></div>
+<div id="empty" class="empty">Nothing found</div>
+    </div>
+    <footer>
+      <div>© Pegakmop — clean builds, no nonsense.</div>
+      <div><a href="https://pegakmop.github.io/release/">← Release Zone</a></div>
+    </footer>
+  </section>
+</div>
+<script>
+(function(){
+  var q=document.getElementById('q'); if(!q) return;
+  var rows=[].slice.call(document.querySelectorAll('[data-s]'));
+  var empty=document.getElementById('empty');
+  q.addEventListener('input',function(){
+    var v=q.value.trim().toLowerCase(), n=0;
+    rows.forEach(function(r){
+      var ok=!v||r.getAttribute('data-s').indexOf(v)>-1;
+      r.style.display=ok?'':'none'; if(ok) n++;
+    });
+    empty.style.display=n?'none':'block';
+  });
+})();
+</script>
+</body>
+</html>
